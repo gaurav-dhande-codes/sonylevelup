@@ -8,13 +8,32 @@ import (
 )
 
 type User struct {
-	Id int
+	Id    int
+	Name  string
+	Email string
+}
+
+type Game struct {
+	Id                         int
+	Title                      string
+	TotalAvailableAchievements int
+}
+
+type UserLibrary struct {
+	User       User
+	OwnedGames []Game
+}
+
+type UserGameAchievementCompletion struct {
+	User                       User
+	Game                       Game
+	TotalCompletedAchievements int
 }
 
 type UserStore interface {
-	GetUser(userId int) int
-	GetUserGameLibrary(userId int) []int
-	GetUserGameAchievementCompletion(userId, gameId int) map[string]int
+	GetUser(userId int) *User
+	GetUserGameLibrary(userId int) *UserLibrary
+	GetUserGameAchievementCompletion(userId, gameId int) *UserGameAchievementCompletion
 }
 
 type SonyServer struct {
@@ -36,16 +55,16 @@ func (s *SonyServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "%s", GetUserAchievementLevel(intUserId))
 }
 
-func GetUser(userId int) int {
-	return 0
+func GetUser(userId int) *User {
+	return &User{}
 }
 
-func GetUserGameLibrary(userId int) []int {
-	return []int{}
+func GetUserGameLibrary(userId int) *UserLibrary {
+	return &UserLibrary{}
 }
 
-func GetUserGameAchievementCompletion(userId, gameId int) map[string]int {
-	return map[string]int{}
+func GetUserGameAchievementCompletion(userId, gameId int) *UserGameAchievementCompletion {
+	return &UserGameAchievementCompletion{}
 }
 
 func GetUserAchievementLevel(userId int) string {
