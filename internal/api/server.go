@@ -20,7 +20,7 @@ func NewSonyServer(store UserStore) *SonyServer {
 
 func (s *SonyServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	userId := strings.Split(r.URL.String(), "/")[2]
-	fmt.Fprintf(w, s.store.GetUserAchievementLevel(userId))
+	fmt.Fprintf(w, "%s", s.store.GetUserAchievementLevel(userId))
 }
 
 func GetUserAchievementLevel(userId string) string {
