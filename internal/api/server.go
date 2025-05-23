@@ -8,12 +8,17 @@ import (
 
 func SonyServer(w http.ResponseWriter, r *http.Request) {
 	userId := strings.Split(r.URL.String(), "/")[2]
+	fmt.Fprintf(w, GetUserAchievementLevel(userId))
+}
 
+func GetUserAchievementLevel(userId string) string {
 	if userId == "1" {
-		fmt.Fprintf(w, "Bronze")
+		return "Bronze"
 	}
 
 	if userId == "2" {
-		fmt.Fprintf(w, "Silver")
+		return "Silver"
 	}
+
+	return ""
 }
