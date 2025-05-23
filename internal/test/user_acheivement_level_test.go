@@ -10,29 +10,28 @@ import (
 )
 
 type StubUserStore struct {
-	// achievementLevel map[string]string
-	user                          int
-	gameLibrary                   []int
-	userGameAchievementCompletion map[string]int
+	users                          []api.User
+	userLibraries                  []api.UserLibrary
+	userGameAchievementCompletions []api.UserGameAchievementCompletion
 }
 
-func (s *StubUserStore) GetUser(userId int) int {
-	return s.user
+func (s *StubUserStore) GetUser(userId int) *api.User {
+	return &api.User{}
 }
 
-func (s *StubUserStore) GetUserGameLibrary(userId int) []int {
-	return s.gameLibrary
+func (s *StubUserStore) GetUserGameLibrary(userId int) *api.UserLibrary {
+	return &api.UserLibrary{}
 }
 
-func (s *StubUserStore) GetUserGameAchievementCompletion(userId, gameId int) map[string]int {
-	return s.userGameAchievementCompletion
+func (s *StubUserStore) GetUserGameAchievementCompletion(userId, gameId int) *api.UserGameAchievementCompletion {
+	return &api.UserGameAchievementCompletion{}
 }
 
 func TestGetUserAchievementLevel(t *testing.T) {
 	testStore := StubUserStore{
-		user:                          1,
-		gameLibrary:                   []int{1, 2, 3},
-		userGameAchievementCompletion: map[string]int{},
+		users:                          []api.User{},
+		userLibraries:                  []api.UserLibrary{},
+		userGameAchievementCompletions: []api.UserGameAchievementCompletion{},
 	}
 	testServer := api.NewSonyServer(&testStore)
 
