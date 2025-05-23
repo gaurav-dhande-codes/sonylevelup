@@ -10,19 +10,29 @@ import (
 )
 
 type StubUserStore struct {
-	achievementLevel map[string]string
+	// achievementLevel map[string]string
+	user                          int
+	gameLibrary                   []int
+	userGameAchievementCompletion map[string]int
 }
 
-func (s *StubUserStore) GetUserAchievementLevel(userId string) string {
-	return s.achievementLevel[userId]
+func (s *StubUserStore) GetUser(userId int) int {
+	return s.user
+}
+
+func (s *StubUserStore) GetUserGameLibrary(userId int) []int {
+	return s.gameLibrary
+}
+
+func (s *StubUserStore) GetUserGameAchievementCompletion(userId, gameId int) map[string]int {
+	return s.userGameAchievementCompletion
 }
 
 func TestGetUserAchievementLevel(t *testing.T) {
 	testStore := StubUserStore{
-		map[string]string{
-			"1": "Bronze",
-			"2": "Silver",
-		},
+		user:                          1,
+		gameLibrary:                   []int{1, 2, 3},
+		userGameAchievementCompletion: map[string]int{},
 	}
 	testServer := api.NewSonyServer(&testStore)
 
