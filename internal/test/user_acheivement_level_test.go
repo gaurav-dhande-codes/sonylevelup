@@ -22,4 +22,18 @@ func TestGetUserAcheivementLevel(t *testing.T) {
 			t.Errorf("got: %q, want: %q", got, want)
 		}
 	})
+
+	t.Run("return sallys achievement level", func(t *testing.T) {
+		request, _ := http.NewRequest(http.MethodGet, "/user/2/achievement-level", nil)
+		response := httptest.NewRecorder()
+
+		api.SonyServer(response, request)
+
+		got := response.Body.String()
+		want := "Silver"
+
+		if got != want {
+			t.Errorf("got: %q, want: %q", got, want)
+		}
+	})
 }
