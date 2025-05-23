@@ -10,6 +10,6 @@ import (
 
 func main() {
 	fmt.Println("Welcome to Sony Level Up!")
-	handler := http.HandlerFunc(api.SonyServer)
-	log.Fatal(http.ListenAndServe(":5000", handler))
+	server := &api.SonyServer{}
+	log.Fatal(http.ListenAndServe(":5000", server))
 }
