@@ -9,10 +9,26 @@ import (
 	"github.com/sonylevelup/internal/api"
 )
 
-func TestGetUserAcheivementLevel(t *testing.T) {
+type StubUserStore struct {
+	achievementLevel map[string]string
+}
+
+func (s *StubUserStore) GetUserAchievementLevel(userId string) string {
+	return s.achievementLevel[userId]
+}
+
+func TestGetUserAchievementLevel(t *testing.T) {
+	testStore := StubUserStore{
+		map[string]string{
+			"1": "Bronze",
+			"2": "Silver",
+		},
+	}
+	testServer := api.NewSonyServer(&testStore)
+
 	t.Run("return garrys achievement level", func(t *testing.T) {
 		response := httptest.NewRecorder()
-		api.SonyServer(response, newGetUserAchievementLevelRequest(t, "1"))
+		testServer.ServeHTTP(response, newGetUserAchievementLevelRequest(t, "1"))
 
 		got := response.Body.String()
 		want := "Bronze"
@@ -22,7 +38,7 @@ func TestGetUserAcheivementLevel(t *testing.T) {
 
 	t.Run("return sallys achievement level", func(t *testing.T) {
 		response := httptest.NewRecorder()
-		api.SonyServer(response, newGetUserAchievementLevelRequest(t, "2"))
+		testServer.ServeHTTP(response, newGetUserAchievementLevelRequest(t, "2"))
 
 		got := response.Body.String()
 		want := "Silver"
