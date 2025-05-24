@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/sonylevelup/internal/api"
+	"github.com/sonylevelup/internal/pkg"
 )
 
 type StubUserStore struct {
@@ -102,7 +103,7 @@ func TestGetUserAchievementLevelForNoAchievementLevelUsers(t *testing.T) {
 			testServer.ServeHTTP(response, newGetUserAchievementLevelRequest(t, fmt.Sprint(test.ID)))
 
 			got := response.Body.String()
-			want := "No Achievement Assigned"
+			want := pkg.NoAchievementLevel
 
 			assertResponseBody(t, got, want)
 		})

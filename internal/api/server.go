@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+
+	"github.com/sonylevelup/internal/pkg"
 )
 
 type User struct {
@@ -51,7 +53,7 @@ func (s *SonyServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	userGameLibrary := s.store.GetUserGameLibrary(intUserId)
 
 	if len(userGameLibrary.OwnedGames) <= 10 {
-		fmt.Fprintf(w, "No Achievement Assigned")
+		fmt.Fprintf(w, pkg.NoAchievementLevel)
 		return
 	}
 
