@@ -10,29 +10,85 @@ import (
 )
 
 type StubUserStore struct {
-	users                          []api.User
-	userLibraries                  []api.UserLibrary
-	userGameAchievementCompletions []api.UserGameAchievementCompletion
+	users []UserData
 }
 
 func (s *StubUserStore) GetUser(userId int) *api.User {
-	return &api.User{}
+	for _, testUser := range s.users {
+		if testUser.ID == userId {
+
+			return &api.User{
+				Id:    testUser.ID,
+				Name:  testUser.Name,
+				Email: testUser.Email,
+			}
+		}
+	}
+
+	return nil
 }
 
 func (s *StubUserStore) GetUserGameLibrary(userId int) *api.UserLibrary {
-	return &api.UserLibrary{}
+	for _, testUser := range s.users {
+		if testUser.ID == userId {
+			testOwnedGames := []api.Game{}
+
+			for _, testGame := range testUser.Games {
+				testOwnedGames = append(
+					testOwnedGames,
+					api.Game{
+						Id:                         testGame.ID,
+						Title:                      testGame.Title,
+						TotalAvailableAchievements: testGame.AvailableAchievements,
+					})
+			}
+
+			return &api.UserLibrary{
+				User: api.User{
+					Id:    testUser.ID,
+					Name:  testUser.Name,
+					Email: testUser.Email,
+				}, OwnedGames: testOwnedGames}
+		}
+	}
+
+	return nil
 }
 
 func (s *StubUserStore) GetUserGameAchievementCompletion(userId, gameId int) *api.UserGameAchievementCompletion {
-	return &api.UserGameAchievementCompletion{}
+	for _, testUser := range s.users {
+		if testUser.ID == userId {
+
+			for _, game := range testUser.Games {
+				if game.ID == gameId {
+
+					return &api.UserGameAchievementCompletion{
+						User: api.User{
+							Id:    testUser.ID,
+							Name:  testUser.Name,
+							Email: testUser.Email,
+						},
+						Game: api.Game{
+							Id:                         game.ID,
+							Title:                      game.Title,
+							TotalAvailableAchievements: game.AvailableAchievements,
+						},
+						TotalCompletedAchievements: game.CompletedAchievements,
+					}
+				}
+			}
+		}
+	}
+
+	return nil
 }
 
 func TestGetUserAchievementLevel(t *testing.T) {
-	testStore := StubUserStore{
-		users:                          []api.User{},
-		userLibraries:                  []api.UserLibrary{},
-		userGameAchievementCompletions: []api.UserGameAchievementCompletion{},
+	testUsers := []UserData{
+		NewTestUser(1, "garry", 10, 10, 5),
+		NewTestUser(2, "sally", 10, 20, 10),
 	}
+	testStore := StubUserStore{testUsers}
 	testServer := api.NewSonyServer(&testStore)
 
 	t.Run("return garrys achievement level", func(t *testing.T) {
