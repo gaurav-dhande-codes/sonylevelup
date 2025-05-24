@@ -55,9 +55,10 @@ func (s *SonyServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if len(userGameLibrary.OwnedGames) <= 10 {
 		fmt.Fprintf(w, pkg.NoAchievementLevel)
 		return
+	} else {
+		fmt.Fprintf(w, pkg.BronzeAchievementLevel)
+		return
 	}
-
-	fmt.Fprintf(w, "")
 }
 
 func GetUser(userId int) *User {
