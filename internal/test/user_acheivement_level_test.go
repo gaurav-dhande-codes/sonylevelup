@@ -85,28 +85,61 @@ func (s *StubUserStore) GetUserGameAchievementCompletion(userId, gameId int) *ap
 
 func TestGetUserAchievementLevel(t *testing.T) {
 	testUsers := []UserData{
-		NewTestUser(1, "garry", 10, 10, 5),
-		NewTestUser(2, "sally", 10, 20, 10),
+		// No Rank Level Users:
+		// 10 or fewer games owned
+		NewTestUser(1, "Garry", 0, 0, 0),
+		NewTestUser(2, "Tom", 1, 100, 100),
+		NewTestUser(3, "Bob", 10, 100, 80),
+		NewTestUser(4, "Luna", 10, 100, 75),
+		NewTestUser(5, "Jerry", 10, 100, 75),
 	}
 	testStore := StubUserStore{testUsers}
 	testServer := api.NewSonyServer(&testStore)
 
-	t.Run("return garrys achievement level", func(t *testing.T) {
+	t.Run("Test users who own 10 games or fewer", func(t *testing.T) {
 		response := httptest.NewRecorder()
 		testServer.ServeHTTP(response, newGetUserAchievementLevelRequest(t, "1"))
 
 		got := response.Body.String()
-		want := "Bronze"
+		want := "No Achievement Assigned"
 
 		assertResponseBody(t, got, want)
 	})
 
-	t.Run("return sallys achievement level", func(t *testing.T) {
+	t.Run("Test users who own 10 games or fewer", func(t *testing.T) {
 		response := httptest.NewRecorder()
 		testServer.ServeHTTP(response, newGetUserAchievementLevelRequest(t, "2"))
 
 		got := response.Body.String()
-		want := "Silver"
+		want := "No Achievement Assigned"
+
+		assertResponseBody(t, got, want)
+	})
+	t.Run("Test users who own 10 games or fewer", func(t *testing.T) {
+		response := httptest.NewRecorder()
+		testServer.ServeHTTP(response, newGetUserAchievementLevelRequest(t, "3"))
+
+		got := response.Body.String()
+		want := "No Achievement Assigned"
+
+		assertResponseBody(t, got, want)
+	})
+	t.Run("Test users who own 10 games or fewer", func(t *testing.T) {
+		response := httptest.NewRecorder()
+		testServer.ServeHTTP(response, newGetUserAchievementLevelRequest(t, "4"))
+
+		got := response.Body.String()
+		want := "No Achievement Assigned"
+
+		assertResponseBody(t, got, want)
+	})
+
+	t.Run("Test users who own 10 games or fewer", func(t *testing.T) {
+		response := httptest.NewRecorder()
+		testServer.ServeHTTP(response, newGetUserAchievementLevelRequest(t, "5"))
+
+		got := response.Body.String()
+		want := "No Achievement Assigned"
 
 		assertResponseBody(t, got, want)
 	})
