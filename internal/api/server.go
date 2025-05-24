@@ -54,6 +54,8 @@ func (s *SonyServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "No Achievement Assigned")
 		return
 	}
+
+	fmt.Fprintf(w, "")
 }
 
 func GetUser(userId int) *User {
