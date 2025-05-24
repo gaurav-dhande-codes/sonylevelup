@@ -48,11 +48,12 @@ func (s *SonyServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	userId := strings.Split(r.URL.String(), "/")[2]
 	intUserId, _ := strconv.Atoi(userId)
 
-	_ = s.store.GetUser(intUserId)
-	_ = s.store.GetUserGameLibrary(intUserId)
-	_ = s.store.GetUserGameAchievementCompletion(intUserId, 0)
+	userGameLibrary := s.store.GetUserGameLibrary(intUserId)
 
-	fmt.Fprintf(w, "%s", GetUserAchievementLevel(intUserId))
+	if len(userGameLibrary.OwnedGames) <= 10 {
+		fmt.Fprintf(w, "No Achievement Assigned")
+		return
+	}
 }
 
 func GetUser(userId int) *User {
