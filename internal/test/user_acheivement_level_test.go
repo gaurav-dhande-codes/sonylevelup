@@ -86,7 +86,7 @@ func (s *StubUserStore) GetUserGameAchievementCompletion(userId, gameId int) *ap
 
 func TestGetUserAchievementLevelForNoAchievementLevelUsers(t *testing.T) {
 	testUsers := []UserData{
-		// No Rank Level Users:
+		// No Achievement Level Users:
 		// 10 or fewer games owned
 		NewTestUser(1, "Garry", 0, 0, 0),
 		NewTestUser(2, "Tom", 1, 100, 100),
@@ -104,6 +104,33 @@ func TestGetUserAchievementLevelForNoAchievementLevelUsers(t *testing.T) {
 
 			got := response.Body.String()
 			want := pkg.NoAchievementLevel
+
+			assertResponseBody(t, got, want)
+		})
+	}
+}
+
+func TestGetUserAchievementLevelForBronzeAchievementLevelUsers(t *testing.T) {
+	testUsers := []UserData{
+		// No Rank Level Users:
+		// More than 10 games owned
+		// Atleast one game has achievement completion percentage of less than 75%
+		NewTestUser(1, "Garry", 11, 100, 50),
+		NewTestUser(2, "Tom", 15, 100, 60),
+		NewTestUser(3, "Bob", 25, 100, 65),
+		NewTestUser(4, "Luna", 30, 100, 70),
+		NewTestUser(5, "Jerry", 75, 100, 75),
+	}
+	testStore := StubUserStore{testUsers}
+	testServer := api.NewSonyServer(&testStore)
+
+	for _, test := range testUsers {
+		t.Run(fmt.Sprintf("Test User %s", test.Name), func(t *testing.T) {
+			response := httptest.NewRecorder()
+			testServer.ServeHTTP(response, newGetUserAchievementLevelRequest(t, fmt.Sprint(test.ID)))
+
+			got := response.Body.String()
+			want := pkg.BronzeAchievementLevel
 
 			assertResponseBody(t, got, want)
 		})
