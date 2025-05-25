@@ -97,7 +97,8 @@ func (s *SonyServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			gameAchievementCompletion.Game.TotalAvailableAchievements)
 
 		for currentIndex+1 < len(possibleAchievementLevels) {
-			if gameAchievementCompletionPercentage > possibleAchievementLevels[currentIndex].AchievementThreshold {
+			if gameAchievementCompletionPercentage > possibleAchievementLevels[currentIndex].AchievementThreshold &&
+				len(userGameLibrary.OwnedGames) > possibleAchievementLevels[currentIndex].OwnedGamesThreshold {
 				break
 			} else {
 				currentIndex++
