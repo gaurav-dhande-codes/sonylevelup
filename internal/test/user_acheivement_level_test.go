@@ -135,6 +135,7 @@ func TestGetUserAchievementLevelForNoAchievementLevelUsers(t *testing.T) {
 			got := response.Body.String()
 			want := pkg.NoAchievementLevel
 
+			assertHttpResponseStatus(t, response.Code, http.StatusOK)
 			assertResponseBody(t, got, want)
 		})
 	}
@@ -217,6 +218,7 @@ func TestGetUserAchievementLevelForBronzeAchievementLevelUsers(t *testing.T) {
 			got := response.Body.String()
 			want := pkg.BronzeAchievementLevel
 
+			assertHttpResponseStatus(t, response.Code, http.StatusOK)
 			assertResponseBody(t, got, want)
 		})
 	}
@@ -317,6 +319,7 @@ func TestGetUserAchievementLevelForSilverAchievementLevelUsers(t *testing.T) {
 			got := response.Body.String()
 			want := pkg.SilverAchievementLevel
 
+			assertHttpResponseStatus(t, response.Code, http.StatusOK)
 			assertResponseBody(t, got, want)
 		})
 	}
@@ -388,6 +391,7 @@ func TestGetUserAchievementLevelForGoldAchievementLevelUsers(t *testing.T) {
 			got := response.Body.String()
 			want := pkg.GoldAchievementLevel
 
+			assertHttpResponseStatus(t, response.Code, http.StatusOK)
 			assertResponseBody(t, got, want)
 		})
 	}
@@ -423,6 +427,7 @@ func TestGetUserAchievementLevelForPlatinumAchievementLevelUsers(t *testing.T) {
 			got := response.Body.String()
 			want := pkg.PlatinumAchievementLevel
 
+			assertHttpResponseStatus(t, response.Code, http.StatusOK)
 			assertResponseBody(t, got, want)
 		})
 	}
@@ -457,6 +462,7 @@ func TestCustomUser(t *testing.T) {
 			got := response.Body.String()
 			want := pkg.NoAchievementLevel
 
+			assertHttpResponseStatus(t, response.Code, http.StatusOK)
 			assertResponseBody(t, got, want)
 		})
 	}
@@ -473,5 +479,12 @@ func assertResponseBody(t testing.TB, got, want string) {
 	t.Helper()
 	if got != want {
 		t.Errorf("got: %q, want: %q", got, want)
+	}
+}
+
+func assertHttpResponseStatus(t testing.TB, got, want int) {
+	t.Helper()
+	if got != want {
+		t.Errorf("recieved incorrect status code, got: %d, want: %d", got, want)
 	}
 }
