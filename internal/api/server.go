@@ -46,19 +46,66 @@ func NewSonyServer(store UserStore) *SonyServer {
 	return &SonyServer{store}
 }
 
+type AchievementLevel struct {
+	Name                 string
+	OwnedGamesThreshold  int
+	AchievementThreshold float64
+}
+
+func GetGameAchievementCompletionPercentage(completedAchievement, totalAchievements int) float64 {
+	return float64(completedAchievement) / float64(totalAchievements) * 100
+}
+
 func (s *SonyServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	userId := strings.Split(r.URL.String(), "/")[2]
 	intUserId, _ := strconv.Atoi(userId)
 
 	userGameLibrary := s.store.GetUserGameLibrary(intUserId)
 
+	// Check if the user owns 10 or fewer games
 	if len(userGameLibrary.OwnedGames) <= 10 {
 		fmt.Fprintf(w, pkg.NoAchievementLevel)
 		return
-	} else {
-		fmt.Fprintf(w, pkg.BronzeAchievementLevel)
-		return
 	}
+
+	PlatinumAchievement := AchievementLevel{pkg.PlatinumAchievementLevel, 50, 99.99}
+	GoldAchievement := AchievementLevel{pkg.GoldAchievementLevel, 25, 80.00}
+	SilverAchievement := AchievementLevel{pkg.SilverAchievementLevel, 10, 75.00}
+	BronzeAchievement := AchievementLevel{pkg.BronzeAchievementLevel, 10, 00.00}
+
+	possibleAchievementLevels := []AchievementLevel{
+		PlatinumAchievement,
+		GoldAchievement,
+		SilverAchievement,
+		BronzeAchievement,
+	}
+
+	currentIndex := 0
+
+	for _, game := range userGameLibrary.OwnedGames {
+		if possibleAchievementLevels[currentIndex].Name == pkg.BronzeAchievementLevel {
+			fmt.Fprintf(w, pkg.BronzeAchievementLevel)
+
+			return
+		}
+
+		gameAchievementCompletion := s.store.GetUserGameAchievementCompletion(intUserId, game.Id)
+
+		// Calculate the completion percentage for the game
+		gameAchievementCompletionPercentage := GetGameAchievementCompletionPercentage(
+			gameAchievementCompletion.TotalCompletedAchievements,
+			gameAchievementCompletion.Game.TotalAvailableAchievements)
+
+		for currentIndex+1 < len(possibleAchievementLevels) {
+			if gameAchievementCompletionPercentage > possibleAchievementLevels[currentIndex].AchievementThreshold {
+				break
+			} else {
+				currentIndex++
+			}
+		}
+	}
+
+	fmt.Fprintf(w, "%s", possibleAchievementLevels[currentIndex].Name)
 }
 
 func GetUser(userId int) *User {
