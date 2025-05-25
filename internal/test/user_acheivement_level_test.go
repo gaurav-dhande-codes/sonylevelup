@@ -145,29 +145,29 @@ func TestGetUserAchievementLevelForBronzeAchievementLevelUsers(t *testing.T) {
 		// Bronze Achievement Level Users:
 		// More than 10 games owned
 
-		// User owns 11 Games and has completed 100% achievements in 10 games and 0% achievements in 1 game.
+		// User owns 11 Games and has completed 76% achievements in 10 games and 75% achievements in 1 game.
 		CustomNewTestUser(1, "Garry", map[string]int{
 			"numberOfGames":         10,
 			"numberOfAchievements":  100,
-			"completedAchievements": 100,
+			"completedAchievements": 76,
 		}, map[string]int{
 			"numberOfGames":         1,
 			"numberOfAchievements":  100,
-			"completedAchievements": 0,
+			"completedAchievements": 75,
 		}),
 
-		// User owns 26 Games and has completed atleast 100% achievements in 25 games and 0% achievements in 1 game.
+		// User owns 26 Games and has completed atleast 81% achievements in 25 games and 75% achievements in 1 game.
 		CustomNewTestUser(2, "Tom", map[string]int{
 			"numberOfGames":         25,
 			"numberOfAchievements":  100,
-			"completedAchievements": 100,
+			"completedAchievements": 81,
 		}, map[string]int{
 			"numberOfGames":         1,
 			"numberOfAchievements":  100,
-			"completedAchievements": 0,
+			"completedAchievements": 75,
 		}),
 
-		// User owns 51 Games and has completed atleast 100% achievements in 50 games and 0% achievements in 1 game.
+		// User owns 51 Games and has completed atleast 100% achievements in 50 games and 75% achievements in 1 game.
 		CustomNewTestUser(3, "Bob", map[string]int{
 			"numberOfGames":         50,
 			"numberOfAchievements":  100,
@@ -175,7 +175,7 @@ func TestGetUserAchievementLevelForBronzeAchievementLevelUsers(t *testing.T) {
 		}, map[string]int{
 			"numberOfGames":         1,
 			"numberOfAchievements":  100,
-			"completedAchievements": 0,
+			"completedAchievements": 75,
 		}),
 
 		// User owns 11 Games and has completed 75% achievements in all games.
@@ -198,6 +198,13 @@ func TestGetUserAchievementLevelForBronzeAchievementLevelUsers(t *testing.T) {
 			"numberOfAchievements":  100,
 			"completedAchievements": 75,
 		}),
+
+		// User owns 11 Games and has completed 0% achievements in all games.
+		CustomNewTestUser(7, "Cody", map[string]int{
+			"numberOfGames":         11,
+			"numberOfAchievements":  100,
+			"completedAchievements": 0,
+		}),
 	}
 	testStore := StubUserStore{testUsers}
 	testServer := api.NewSonyServer(&testStore)
@@ -219,11 +226,85 @@ func TestGetUserAchievementLevelForSilverAchievementLevelUsers(t *testing.T) {
 	testUsers := []UserData{
 		// Silver Achievement Level Users:
 		// Owns more than 10 games and has 75%+ achievements in each
-		NewTestUser(1, "Garry", 11, 100, 76),
-		NewTestUser(2, "Tom", 15, 100, 77),
-		NewTestUser(3, "Bob", 25, 100, 78),
-		NewTestUser(4, "Luna", 30, 100, 79),
-		NewTestUser(5, "Jerry", 75, 100, 80),
+
+		// User owns 26 Games and has completed 81% achievements in 25 games and 80% achievements in 1 game.
+		CustomNewTestUser(1, "Garry", map[string]int{
+			"numberOfGames":         25,
+			"numberOfAchievements":  100,
+			"completedAchievements": 81,
+		}, map[string]int{
+			"numberOfGames":         1,
+			"numberOfAchievements":  100,
+			"completedAchievements": 80,
+		}),
+
+		// User owns 26 Games and has completed 81% achievements in 25 games and 76% achievements in 1 game.
+		CustomNewTestUser(2, "Tom", map[string]int{
+			"numberOfGames":         25,
+			"numberOfAchievements":  100,
+			"completedAchievements": 81,
+		}, map[string]int{
+			"numberOfGames":         1,
+			"numberOfAchievements":  100,
+			"completedAchievements": 76,
+		}),
+
+		// User owns 51 Games and has completed 100% achievements in 50 games and 80% achievements in 1 game.
+		CustomNewTestUser(3, "Bob", map[string]int{
+			"numberOfGames":         50,
+			"numberOfAchievements":  100,
+			"completedAchievements": 100,
+		}, map[string]int{
+			"numberOfGames":         1,
+			"numberOfAchievements":  100,
+			"completedAchievements": 80,
+		}),
+
+		// User owns 51 Games and has completed 100% achievements in 50 games and 76% achievements in 1 game.
+		CustomNewTestUser(4, "Luna", map[string]int{
+			"numberOfGames":         50,
+			"numberOfAchievements":  100,
+			"completedAchievements": 100,
+		}, map[string]int{
+			"numberOfGames":         1,
+			"numberOfAchievements":  100,
+			"completedAchievements": 76,
+		}),
+
+		// User owns 26 Games and has completed 80% achievements in all games.
+		CustomNewTestUser(5, "Jerry", map[string]int{
+			"numberOfGames":         26,
+			"numberOfAchievements":  100,
+			"completedAchievements": 80,
+		}),
+
+		// User owns 51 Games and has completed 80% achievements in all games.
+		CustomNewTestUser(6, "Sally", map[string]int{
+			"numberOfGames":         51,
+			"numberOfAchievements":  100,
+			"completedAchievements": 80,
+		}),
+
+		// User owns 26 Games and has completed 76% achievements in all games.
+		CustomNewTestUser(7, "Cody", map[string]int{
+			"numberOfGames":         26,
+			"numberOfAchievements":  100,
+			"completedAchievements": 76,
+		}),
+
+		// User owns 51 Games and has completed 76% achievements in all games.
+		CustomNewTestUser(8, "Ezra", map[string]int{
+			"numberOfGames":         51,
+			"numberOfAchievements":  100,
+			"completedAchievements": 76,
+		}),
+
+		// User owns 11 Games and has completed 76% achievements in all games.
+		CustomNewTestUser(9, "Daniel", map[string]int{
+			"numberOfGames":         11,
+			"numberOfAchievements":  100,
+			"completedAchievements": 76,
+		}),
 	}
 	testStore := StubUserStore{testUsers}
 	testServer := api.NewSonyServer(&testStore)
