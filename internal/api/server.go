@@ -64,6 +64,7 @@ func (s *SonyServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	// Check if the user owns 10 or fewer games
 	if len(userGameLibrary.OwnedGames) <= 10 {
+		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, pkg.NoAchievementLevel)
 		return
 	}
@@ -84,6 +85,7 @@ func (s *SonyServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	for _, game := range userGameLibrary.OwnedGames {
 		if possibleAchievementLevels[currentIndex].Name == pkg.BronzeAchievementLevel {
+			w.WriteHeader(http.StatusOK)
 			fmt.Fprintf(w, pkg.BronzeAchievementLevel)
 
 			return
@@ -106,6 +108,7 @@ func (s *SonyServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, "%s", possibleAchievementLevels[currentIndex].Name)
 }
 
