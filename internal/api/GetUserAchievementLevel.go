@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/sonylevelup/internal/model"
 	"github.com/sonylevelup/internal/pkg"
 )
 
@@ -23,22 +24,11 @@ func (s *SonyServer) GetUserAchievementLevel(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	PlatinumAchievement := AchievementLevel{pkg.PlatinumAchievementLevel, 50, 99.99}
-	GoldAchievement := AchievementLevel{pkg.GoldAchievementLevel, 25, 80.00}
-	SilverAchievement := AchievementLevel{pkg.SilverAchievementLevel, 10, 75.00}
-	BronzeAchievement := AchievementLevel{pkg.BronzeAchievementLevel, 10, 00.00}
-
-	possibleAchievementLevels := []AchievementLevel{
-		PlatinumAchievement,
-		GoldAchievement,
-		SilverAchievement,
-		BronzeAchievement,
-	}
-
+	achievementLevels := model.GetAchievementLevels()
 	currentIndex := 0
 
 	for _, game := range userGameLibrary.OwnedGames {
-		if possibleAchievementLevels[currentIndex].Name == pkg.BronzeAchievementLevel {
+		if achievementLevels[currentIndex].Name == pkg.BronzeAchievementLevel {
 			w.WriteHeader(http.StatusOK)
 			fmt.Fprintf(w, pkg.BronzeAchievementLevel)
 
@@ -52,9 +42,9 @@ func (s *SonyServer) GetUserAchievementLevel(w http.ResponseWriter, r *http.Requ
 			gameAchievementCompletion.TotalCompletedAchievements,
 			gameAchievementCompletion.Game.TotalAvailableAchievements)
 
-		for currentIndex+1 < len(possibleAchievementLevels) {
-			if gameAchievementCompletionPercentage > possibleAchievementLevels[currentIndex].AchievementThreshold &&
-				len(userGameLibrary.OwnedGames) > possibleAchievementLevels[currentIndex].OwnedGamesThreshold {
+		for currentIndex+1 < len(achievementLevels) {
+			if gameAchievementCompletionPercentage > achievementLevels[currentIndex].AchievementThreshold &&
+				len(userGameLibrary.OwnedGames) > achievementLevels[currentIndex].OwnedGamesThreshold {
 				break
 			} else {
 				currentIndex++
@@ -63,5 +53,5 @@ func (s *SonyServer) GetUserAchievementLevel(w http.ResponseWriter, r *http.Requ
 	}
 
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "%s", possibleAchievementLevels[currentIndex].Name)
+	fmt.Fprintf(w, "%s", achievementLevels[currentIndex].Name)
 }

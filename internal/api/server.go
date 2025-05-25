@@ -4,49 +4,21 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/sonylevelup/internal/model"
 )
-
-type User struct {
-	Id    int
-	Name  string
-	Email string
-}
-
-type Game struct {
-	Id                         int
-	Title                      string
-	TotalAvailableAchievements int
-}
-
-type UserLibrary struct {
-	User       User
-	OwnedGames []Game
-}
-
-type UserGameAchievementCompletion struct {
-	User                       User
-	Game                       Game
-	TotalCompletedAchievements int
-}
-
-type UserStore interface {
-	GetUser(userId int) *User
-	GetUserGameLibrary(userId int) *UserLibrary
-	GetUserGameAchievementCompletion(userId, gameId int) *UserGameAchievementCompletion
-}
 
 type SonyServer struct {
 	store UserStore
 }
 
-func NewSonyServer(store UserStore) *SonyServer {
-	return &SonyServer{store}
+type UserStore interface {
+	GetUser(userId int) *model.User
+	GetUserGameLibrary(userId int) *model.UserLibrary
+	GetUserGameAchievementCompletion(userId, gameId int) *model.UserGameAchievementCompletion
 }
 
-type AchievementLevel struct {
-	Name                 string
-	OwnedGamesThreshold  int
-	AchievementThreshold float64
+func NewSonyServer(store UserStore) *SonyServer {
+	return &SonyServer{store}
 }
 
 func GetGameAchievementCompletionPercentage(completedAchievement, totalAchievements int) float64 {
@@ -60,26 +32,14 @@ func (s *SonyServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	router.ServeHTTP(w, r)
 }
 
-func GetUser(userId int) *User {
-	return &User{}
+func GetUser(userId int) *model.User {
+	return &model.User{}
 }
 
-func GetUserGameLibrary(userId int) *UserLibrary {
-	return &UserLibrary{}
+func GetUserGameLibrary(userId int) *model.UserLibrary {
+	return &model.UserLibrary{}
 }
 
-func GetUserGameAchievementCompletion(userId, gameId int) *UserGameAchievementCompletion {
-	return &UserGameAchievementCompletion{}
-}
-
-func GetUserAchievementLevel(userId int) string {
-	if userId == 1 {
-		return "Bronze"
-	}
-
-	if userId == 2 {
-		return "Silver"
-	}
-
-	return ""
+func GetUserGameAchievementCompletion(userId, gameId int) *model.UserGameAchievementCompletion {
+	return &model.UserGameAchievementCompletion{}
 }

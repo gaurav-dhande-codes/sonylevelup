@@ -1,16 +1,18 @@
 package test
 
-import "github.com/sonylevelup/internal/api"
+import (
+	"github.com/sonylevelup/internal/model"
+)
 
 type StubUserStore struct {
 	users []UserData
 }
 
-func (s *StubUserStore) GetUser(userId int) *api.User {
+func (s *StubUserStore) GetUser(userId int) *model.User {
 	for _, testUser := range s.users {
 		if testUser.ID == userId {
 
-			return &api.User{
+			return &model.User{
 				Id:    testUser.ID,
 				Name:  testUser.Name,
 				Email: testUser.Email,
@@ -21,23 +23,23 @@ func (s *StubUserStore) GetUser(userId int) *api.User {
 	return nil
 }
 
-func (s *StubUserStore) GetUserGameLibrary(userId int) *api.UserLibrary {
+func (s *StubUserStore) GetUserGameLibrary(userId int) *model.UserLibrary {
 	for _, testUser := range s.users {
 		if testUser.ID == userId {
-			testOwnedGames := []api.Game{}
+			testOwnedGames := []model.Game{}
 
 			for _, testGame := range testUser.Games {
 				testOwnedGames = append(
 					testOwnedGames,
-					api.Game{
+					model.Game{
 						Id:                         testGame.ID,
 						Title:                      testGame.Title,
 						TotalAvailableAchievements: testGame.AvailableAchievements,
 					})
 			}
 
-			return &api.UserLibrary{
-				User: api.User{
+			return &model.UserLibrary{
+				User: model.User{
 					Id:    testUser.ID,
 					Name:  testUser.Name,
 					Email: testUser.Email,
@@ -48,20 +50,20 @@ func (s *StubUserStore) GetUserGameLibrary(userId int) *api.UserLibrary {
 	return nil
 }
 
-func (s *StubUserStore) GetUserGameAchievementCompletion(userId, gameId int) *api.UserGameAchievementCompletion {
+func (s *StubUserStore) GetUserGameAchievementCompletion(userId, gameId int) *model.UserGameAchievementCompletion {
 	for _, testUser := range s.users {
 		if testUser.ID == userId {
 
 			for _, game := range testUser.Games {
 				if game.ID == gameId {
 
-					return &api.UserGameAchievementCompletion{
-						User: api.User{
+					return &model.UserGameAchievementCompletion{
+						User: model.User{
 							Id:    testUser.ID,
 							Name:  testUser.Name,
 							Email: testUser.Email,
 						},
-						Game: api.Game{
+						Game: model.Game{
 							Id:                         game.ID,
 							Title:                      game.Title,
 							TotalAvailableAchievements: game.AvailableAchievements,
