@@ -326,11 +326,56 @@ func TestGetUserAchievementLevelForGoldAchievementLevelUsers(t *testing.T) {
 	testUsers := []UserData{
 		// Gold Achievement Level Users:
 		// Owns 25+ games and has 80%+ achievements in each
-		NewTestUser(1, "Garry", 26, 100, 81),
-		NewTestUser(2, "Tom", 30, 100, 85),
-		NewTestUser(3, "Bob", 35, 100, 90),
-		NewTestUser(4, "Luna", 50, 100, 95),
-		NewTestUser(5, "Jerry", 75, 100, 99),
+
+		// User owns 51 Games and has completed 100% achievements in 50 games and 99% achievements in 1 game.
+		CustomNewTestUser(1, "Garry", map[string]int{
+			"numberOfGames":         50,
+			"numberOfAchievements":  100,
+			"completedAchievements": 100,
+		}, map[string]int{
+			"numberOfGames":         1,
+			"numberOfAchievements":  100,
+			"completedAchievements": 99,
+		}),
+
+		// User owns 51 Games and has completed 100% achievements in 50 games and 81% achievements in 1 game.
+		CustomNewTestUser(2, "Tom", map[string]int{
+			"numberOfGames":         50,
+			"numberOfAchievements":  100,
+			"completedAchievements": 100,
+		}, map[string]int{
+			"numberOfGames":         1,
+			"numberOfAchievements":  100,
+			"completedAchievements": 81,
+		}),
+
+		// User owns 50 Games and has completed 100% achievements in all games.
+		CustomNewTestUser(3, "Bob", map[string]int{
+			"numberOfGames":         50,
+			"numberOfAchievements":  100,
+			"completedAchievements": 100,
+		}),
+
+		// User owns 50 Games and has completed 81% achievements in all games.
+		CustomNewTestUser(4, "Luna", map[string]int{
+			"numberOfGames":         50,
+			"numberOfAchievements":  100,
+			"completedAchievements": 81,
+		}),
+
+		// User owns 26 Games and has completed 81% achievements in all games.
+		CustomNewTestUser(5, "Jerry", map[string]int{
+			"numberOfGames":         26,
+			"numberOfAchievements":  100,
+			"completedAchievements": 81,
+		}),
+
+		// User owns 26 Games and has completed 100% achievements in all games.
+		CustomNewTestUser(6, "Sally", map[string]int{
+			"numberOfGames":         26,
+			"numberOfAchievements":  100,
+			"completedAchievements": 100,
+		}),
 	}
 	testStore := StubUserStore{testUsers}
 	testServer := api.NewSonyServer(&testStore)
