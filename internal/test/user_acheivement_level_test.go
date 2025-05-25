@@ -112,7 +112,7 @@ func TestGetUserAchievementLevelForNoAchievementLevelUsers(t *testing.T) {
 
 func TestGetUserAchievementLevelForBronzeAchievementLevelUsers(t *testing.T) {
 	testUsers := []UserData{
-		// No Rank Level Users:
+		// Bronze Achievement Level Users:
 		// More than 10 games owned
 		// Atleast one game has achievement completion percentage of less than 75%
 		NewTestUser(1, "Garry", 11, 100, 50),
@@ -131,6 +131,80 @@ func TestGetUserAchievementLevelForBronzeAchievementLevelUsers(t *testing.T) {
 
 			got := response.Body.String()
 			want := pkg.BronzeAchievementLevel
+
+			assertResponseBody(t, got, want)
+		})
+	}
+}
+
+func TestGetUserAchievementLevelForSilverAchievementLevelUsers(t *testing.T) {
+	testUsers := []UserData{
+		// Silver Achievement Level Users:
+		// Owns more than 10 games and has 75%+ achievements in each
+		NewTestUser(1, "Garry", 11, 100, 76),
+		NewTestUser(2, "Tom", 15, 100, 77),
+		NewTestUser(3, "Bob", 25, 100, 78),
+		NewTestUser(4, "Luna", 30, 100, 79),
+		NewTestUser(5, "Jerry", 75, 100, 80),
+	}
+	testStore := StubUserStore{testUsers}
+	testServer := api.NewSonyServer(&testStore)
+
+	for _, test := range testUsers {
+		t.Run(fmt.Sprintf("Test User %s", test.Name), func(t *testing.T) {
+			response := httptest.NewRecorder()
+			testServer.ServeHTTP(response, newGetUserAchievementLevelRequest(t, fmt.Sprint(test.ID)))
+
+			got := response.Body.String()
+			want := pkg.SilverAchievementLevel
+
+			assertResponseBody(t, got, want)
+		})
+	}
+}
+
+func TestGetUserAchievementLevelForGoldAchievementLevelUsers(t *testing.T) {
+	testUsers := []UserData{
+		// Gold Achievement Level Users:
+		// Owns 25+ games and has 80%+ achievements in each
+		NewTestUser(1, "Garry", 26, 100, 81),
+		NewTestUser(2, "Tom", 30, 100, 85),
+		NewTestUser(3, "Bob", 35, 100, 90),
+		NewTestUser(4, "Luna", 50, 100, 95),
+		NewTestUser(5, "Jerry", 75, 100, 99),
+	}
+	testStore := StubUserStore{testUsers}
+	testServer := api.NewSonyServer(&testStore)
+
+	for _, test := range testUsers {
+		t.Run(fmt.Sprintf("Test User %s", test.Name), func(t *testing.T) {
+			response := httptest.NewRecorder()
+			testServer.ServeHTTP(response, newGetUserAchievementLevelRequest(t, fmt.Sprint(test.ID)))
+
+			got := response.Body.String()
+			want := pkg.GoldAchievementLevel
+
+			assertResponseBody(t, got, want)
+		})
+	}
+}
+
+func TestGetUserAchievementLevelForPlatinumAchievementLevelUsers(t *testing.T) {
+	testUsers := []UserData{
+		// Platinum Achievement Level Users:
+		// Owns 50+ games and has 100% achievements in each
+		NewTestUser(1, "Garry", 51, 100, 100),
+	}
+	testStore := StubUserStore{testUsers}
+	testServer := api.NewSonyServer(&testStore)
+
+	for _, test := range testUsers {
+		t.Run(fmt.Sprintf("Test User %s", test.Name), func(t *testing.T) {
+			response := httptest.NewRecorder()
+			testServer.ServeHTTP(response, newGetUserAchievementLevelRequest(t, fmt.Sprint(test.ID)))
+
+			got := response.Body.String()
+			want := pkg.PlatinumAchievementLevel
 
 			assertResponseBody(t, got, want)
 		})
