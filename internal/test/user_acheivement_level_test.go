@@ -397,7 +397,20 @@ func TestGetUserAchievementLevelForPlatinumAchievementLevelUsers(t *testing.T) {
 	testUsers := []UserData{
 		// Platinum Achievement Level Users:
 		// Owns 50+ games and has 100% achievements in each
-		NewTestUser(1, "Garry", 51, 100, 100),
+
+		// User owns 51 Games and has completed 100% achievements in all games.
+		CustomNewTestUser(1, "Garry", map[string]int{
+			"numberOfGames":         51,
+			"numberOfAchievements":  100,
+			"completedAchievements": 100,
+		}),
+
+		// User owns 100 Games and has completed 100% achievements in all games.
+		CustomNewTestUser(2, "Tom", map[string]int{
+			"numberOfGames":         100,
+			"numberOfAchievements":  100,
+			"completedAchievements": 100,
+		}),
 	}
 	testStore := StubUserStore{testUsers}
 	testServer := api.NewSonyServer(&testStore)
@@ -415,7 +428,7 @@ func TestGetUserAchievementLevelForPlatinumAchievementLevelUsers(t *testing.T) {
 	}
 }
 
-func TestCustomGames(t *testing.T) {
+func TestCustomUser(t *testing.T) {
 	testUsers := []UserData{
 		CustomNewTestUser(1, "Garry",
 			map[string]int{
@@ -433,23 +446,19 @@ func TestCustomGames(t *testing.T) {
 			}),
 	}
 
-	// testStore := StubUserStore{testUsers}
-	// testServer := api.NewSonyServer(&testStore)
+	testStore := StubUserStore{testUsers}
+	testServer := api.NewSonyServer(&testStore)
 
-	// for _, test := range testUsers {
-	// 	t.Run(fmt.Sprintf("Test User %s", test.Name), func(t *testing.T) {
-	// 		response := httptest.NewRecorder()
-	// 		testServer.ServeHTTP(response, newGetUserAchievementLevelRequest(t, fmt.Sprint(test.ID)))
+	for _, test := range testUsers {
+		t.Run(fmt.Sprintf("Test User %s", test.Name), func(t *testing.T) {
+			response := httptest.NewRecorder()
+			testServer.ServeHTTP(response, newGetUserAchievementLevelRequest(t, fmt.Sprint(test.ID)))
 
-	// 		got := response.Body.String()
-	// 		want := pkg.BronzeAchievementLevel
+			got := response.Body.String()
+			want := pkg.NoAchievementLevel
 
-	// 		assertResponseBody(t, got, want)
-	// 	})
-	// }
-
-	for _, user := range testUsers {
-		fmt.Println(user.Games)
+			assertResponseBody(t, got, want)
+		})
 	}
 }
 
