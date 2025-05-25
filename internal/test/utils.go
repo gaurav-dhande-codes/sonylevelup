@@ -19,7 +19,7 @@ type UserData struct {
 }
 
 func NewTestUser(id int, name string, numberOfGames, numberOfAchievements, completedAchievements int) UserData {
-	games := NewTestUserGameLibrary(numberOfGames, numberOfAchievements, completedAchievements)
+	games := NewTestUserGameLibrary(numberOfGames, numberOfAchievements, completedAchievements, 0)
 	return UserData{
 		ID:    id,
 		Name:  name,
@@ -28,12 +28,29 @@ func NewTestUser(id int, name string, numberOfGames, numberOfAchievements, compl
 	}
 }
 
-func NewTestUserGameLibrary(numberOfGames, numberOfAchievements, completedAchievements int) []GamesData {
+func CustomNewTestUser(id int, name string, gamesMetadata ...map[string]int) UserData {
+	games := []GamesData{}
+	startIndex := 0
+	for _, gameMetadata := range gamesMetadata {
+		customGames := NewTestUserGameLibrary(gameMetadata["numberOfGames"], gameMetadata["numberOfAchievements"], gameMetadata["completedAchievements"], startIndex)
+		games = append(games, customGames...)
+		startIndex = len(games)
+	}
+
+	return UserData{
+		ID:    id,
+		Name:  name,
+		Email: fmt.Sprintf("%s@sony.com", name),
+		Games: games,
+	}
+}
+
+func NewTestUserGameLibrary(numberOfGames, numberOfAchievements, completedAchievements, startIndex int) []GamesData {
 	games := []GamesData{}
 	for i := 1; i <= numberOfGames; i++ {
 		game := GamesData{
-			ID:                    i,
-			Title:                 fmt.Sprintf("Game_%d", i),
+			ID:                    startIndex + i,
+			Title:                 fmt.Sprintf("Game_%d", startIndex+i),
 			AvailableAchievements: numberOfAchievements,
 			CompletedAchievements: completedAchievements,
 		}
