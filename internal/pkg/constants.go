@@ -1,4 +1,9 @@
 package pkg
 
-const NoAchievementLevel = "No Achievement Assigned"
-const BronzeAchievementLevel = "Bronze"
+const (
+	NoAchievementLevel       = "No Achievement Assigned"
+	BronzeAchievementLevel   = "Bronze"
+	SilverAchievementLevel   = "Silver"
+	GoldAchievementLevel     = "Gold"
+	PlatinumAchievementLevel = "Platinum"
+)
