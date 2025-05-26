@@ -21,7 +21,7 @@ func (s *SonyServer) GetUserAchievementLevel(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	user := s.store.GetUser(intUserId)
+	user, _ := s.store.GetUser(intUserId)
 	if user == nil {
 		w.WriteHeader(http.StatusNotFound)
 		fmt.Fprintf(w, "Not Found")
@@ -29,7 +29,7 @@ func (s *SonyServer) GetUserAchievementLevel(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	userGameLibrary := s.store.GetUserGameLibrary(intUserId)
+	userGameLibrary, _ := s.store.GetUserGameLibrary(intUserId)
 
 	// Check if the user owns 10 or fewer games
 	if len(userGameLibrary.OwnedGames) <= 10 {
@@ -49,7 +49,7 @@ func (s *SonyServer) GetUserAchievementLevel(w http.ResponseWriter, r *http.Requ
 			return
 		}
 
-		gameAchievementCompletion := s.store.GetUserGameAchievementCompletion(intUserId, game.Id)
+		gameAchievementCompletion, _ := s.store.GetUserGameAchievementCompletion(intUserId, game.Id)
 
 		// Calculate the completion percentage for the game
 		gameAchievementCompletionPercentage := GetGameAchievementCompletionPercentage(
