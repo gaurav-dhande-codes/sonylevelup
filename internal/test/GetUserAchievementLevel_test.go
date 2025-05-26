@@ -359,6 +359,30 @@ func TestGetUserAchievementLevelForPlatinumAchievementLevelUsers(t *testing.T) {
 	}
 }
 
+func TestAmbiguousBehaviour(t *testing.T) {
+	testUsers := []UserData{
+		CustomNewTestUser(1, "Garry", map[string]int{
+			"numberOfGames":         15,
+			"numberOfAchievements":  100,
+			"completedAchievements": 100,
+		}),
+	}
+
+	testStore := StubUserStore{testUsers}
+	testServer := api.NewSonyServer(&testStore)
+
+	t.Run("Check for bad request when parsing url parameters", func(t *testing.T) {
+		response := httptest.NewRecorder()
+		testServer.ServeHTTP(response, newGetUserAchievementLevelRequest(t, "1a"))
+
+		got := response.Body.String()
+		want := "Bad Request"
+
+		assertHttpResponseStatus(t, response.Code, http.StatusBadRequest)
+		assertResponseBody(t, got, want)
+	})
+}
+
 func TestCustomUser(t *testing.T) {
 	testUsers := []UserData{
 		CustomNewTestUser(1, "Garry",
