@@ -17,4 +17,8 @@ type UserStore interface {
 	// GetUserGameAchievementCompletion retrieves the achievement completion details for a specific user and game, identified by userId and gameId.
 	// Returns a UserGameAchievementCompletion or an error if the user or game is not found or if an internal error occurs.
 	GetUserGameAchievementCompletion(userId, gameId int) (*model.UserGameAchievementCompletion, error)
+
+	// GetAllUsers retrieves all users stored in the system.
+	// Returns a slice of User models or an error if the data cannot be retrieved.
+	GetAllUsers() (*[]model.User, error)
 }
