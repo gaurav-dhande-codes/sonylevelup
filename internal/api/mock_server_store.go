@@ -119,11 +119,11 @@ func (m *MockServerUserStore) GetAllUsers() ([]*model.User, error) {
 	defer response.Body.Close()
 
 	if response.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("error response received while making get all users request to mock server, %v", err)
+		return nil, fmt.Errorf("error response received while making get all users request to mock server, %v", response.StatusCode)
 	}
 
 	allUsers := []*model.User{}
-	err = json.NewDecoder(response.Body).Decode(allUsers)
+	err = json.NewDecoder(response.Body).Decode(&allUsers)
 	if err != nil {
 		return nil, fmt.Errorf("error encountered while decoding get all users response received from mock server, %v", err)
 	}

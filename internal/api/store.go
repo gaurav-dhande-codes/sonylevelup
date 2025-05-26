@@ -20,5 +20,5 @@ type UserStore interface {
 
 	// GetAllUsers retrieves all users stored in the system.
 	// Returns a slice of User models or an error if the data cannot be retrieved.
-	GetAllUsers() (*[]model.User, error)
+	GetAllUsers() ([]*model.User, error)
 }
