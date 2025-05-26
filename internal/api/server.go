@@ -7,16 +7,21 @@ import (
 )
 
 type SonyServer struct {
-	store UserStore
+	store  UserStore
+	router *mux.Router
 }
 
 func NewSonyServer(store UserStore) *SonyServer {
-	return &SonyServer{store}
+	router := mux.NewRouter()
+	server := &SonyServer{
+		store,
+		router,
+	}
+
+	router.HandleFunc("/users/{userId}/achievement-level", server.GetUserAchievementLevel).Methods("GET")
+	return server
 }
 
 func (s *SonyServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	router := mux.NewRouter()
-	router.HandleFunc("/users/{userId}/achievement-level", s.GetUserAchievementLevel)
-
-	router.ServeHTTP(w, r)
+	s.router.ServeHTTP(w, r)
 }
