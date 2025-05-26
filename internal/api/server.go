@@ -8,14 +8,14 @@ import (
 	"github.com/sonylevelup/internal/pkg"
 )
 
-// SonyServer represents the main HTTP server handling API requests. 
+// SonyServer represents the main HTTP server handling API requests.
 // It holds a reference to a UserStore for data operations and a Gorilla mux router for routing.
 type SonyServer struct {
 	store  UserStore
 	router *mux.Router
 }
 
-// NewSonyServer creates and returns a new SonyServer instance configured with the given UserStore. 
+// NewSonyServer creates and returns a new SonyServer instance configured with the given UserStore.
 // It initializes the HTTP router, sets up the route handlers, and applies middleware.
 func NewSonyServer(store UserStore) *SonyServer {
 	router := mux.NewRouter()
@@ -26,6 +26,7 @@ func NewSonyServer(store UserStore) *SonyServer {
 
 	// Register route for fetching user achievement level by user ID
 	router.HandleFunc("/users/{userId}/achievement-level", server.GetUserAchievementLevel).Methods("GET")
+	router.HandleFunc("/users", server.GetAllUsers).Methods("GET")
 
 	// Apply logging middleware to all routes
 	router.Use(LoggingMiddleware)
@@ -53,6 +54,15 @@ func LoggingMiddleware(next http.Handler) http.Handler {
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			}
 		}()
+
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
 
 		next.ServeHTTP(w, r)
 
