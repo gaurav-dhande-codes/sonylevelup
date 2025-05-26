@@ -12,9 +12,9 @@ type SonyServer struct {
 }
 
 type UserStore interface {
-	GetUser(userId int) *model.User
-	GetUserGameLibrary(userId int) *model.UserLibrary
-	GetUserGameAchievementCompletion(userId, gameId int) *model.UserGameAchievementCompletion
+	GetUser(userId int) (*model.User, error)
+	GetUserGameLibrary(userId int) (*model.UserLibrary, error)
+	GetUserGameAchievementCompletion(userId, gameId int) (*model.UserGameAchievementCompletion, error)
 }
 
 func NewSonyServer(store UserStore) *SonyServer {
