@@ -16,7 +16,7 @@ func NewSonyServer(store UserStore) *SonyServer {
 
 func (s *SonyServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	router := mux.NewRouter()
-	router.HandleFunc("/user/{userId}/achievement-level", s.GetUserAchievementLevel)
+	router.HandleFunc("/users/{userId}/achievement-level", s.GetUserAchievementLevel)
 
 	router.ServeHTTP(w, r)
 }
