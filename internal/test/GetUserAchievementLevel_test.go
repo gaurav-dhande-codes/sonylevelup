@@ -431,7 +431,7 @@ func TestCustomUser(t *testing.T) {
 
 func newGetUserAchievementLevelRequest(t testing.TB, userId string) *http.Request {
 	t.Helper()
-	request, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/user/%s/achievement-level", userId), nil)
+	request, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/users/%s/achievement-level", userId), nil)
 
 	return request
 }
