@@ -19,7 +19,6 @@ func NewMockServerUserStore(baseUrl string) *MockServerUserStore {
 
 func (m *MockServerUserStore) GetUser(userId int) (*model.User, error) {
 	getUserUrl := fmt.Sprintf("%s/users/%d", m.baseUrl, userId)
-	fmt.Println(getUserUrl)
 
 	response, err := http.Get(getUserUrl)
 	if err != nil {
@@ -42,11 +41,36 @@ func (m *MockServerUserStore) GetUser(userId int) (*model.User, error) {
 		return nil, fmt.Errorf("error encountered while decoding get user response received from mock server, %v", err)
 	}
 
+	fmt.Println(user)
 	return user, nil
 }
 
 func (m *MockServerUserStore) GetUserGameLibrary(userId int) (*model.UserLibrary, error) {
-	return &model.UserLibrary{}, nil
+	getUserGameLibraryUrl := fmt.Sprintf("%s/users/%d/library", m.baseUrl, userId)
+
+	response, err := http.Get(getUserGameLibraryUrl)
+	if err != nil {
+		return nil, fmt.Errorf("error while making get user library request to mock server, %v", err)
+	}
+	defer response.Body.Close()
+
+	switch response.StatusCode {
+	case http.StatusNotFound:
+		return nil, pkg.ErrUserNotFound
+	case http.StatusOK:
+		// continue as usual
+	default:
+		return nil, fmt.Errorf("error response received while making get user library request to mock server, %v", err)
+	}
+
+	userLibrary := &model.UserLibrary{}
+	err = json.NewDecoder(response.Body).Decode(userLibrary)
+	if err != nil {
+		return nil, fmt.Errorf("error encountered while decoding get user library response received from mock server, %v", err)
+	}
+
+	fmt.Println(userLibrary)
+	return userLibrary, nil
 }
 
 func (m *MockServerUserStore) GetUserGameAchievementCompletion(userId, gameId int) (*model.UserGameAchievementCompletion, error) {
