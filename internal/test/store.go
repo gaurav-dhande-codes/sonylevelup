@@ -9,6 +9,21 @@ type StubUserStore struct {
 	users []UserData
 }
 
+// GetUser returns a user by their ID from the stubbed user list.
+//
+// Parameters:
+//   - userId: The integer ID of the user to retrieve.
+//
+// Returns:
+//   - A pointer to a model.User if found.
+//   - An error if the user is not found.
+//
+// Example:
+//
+//	user, err := stubStore.GetUser(1)
+//	if err != nil {
+//	    t.Fatalf("User not found")
+//	}
 func (s *StubUserStore) GetUser(userId int) (*model.User, error) {
 	for _, testUser := range s.users {
 		if testUser.ID == userId {
@@ -24,6 +39,21 @@ func (s *StubUserStore) GetUser(userId int) (*model.User, error) {
 	return nil, pkg.ErrUserNotFound
 }
 
+// GetUserGameLibrary returns the game library for a user.
+//
+// Parameters:
+//   - userId: The integer ID of the user whose game library is to be retrieved.
+//
+// Returns:
+//   - A pointer to a model.UserLibrary struct containing the user's owned games.
+//   - An error if the user is not found.
+//
+// Example:
+//
+//	library, err := stubStore.GetUserGameLibrary(1)
+//	if err != nil {
+//	    t.Errorf("Could not get library: %v", err)
+//	}
 func (s *StubUserStore) GetUserGameLibrary(userId int) (*model.UserLibrary, error) {
 	for _, testUser := range s.users {
 		if testUser.ID == userId {
@@ -51,6 +81,22 @@ func (s *StubUserStore) GetUserGameLibrary(userId int) (*model.UserLibrary, erro
 	return nil, pkg.ErrUserNotFound
 }
 
+// GetUserGameAchievementCompletion returns the achievement progress for a user on a specific game.
+//
+// Parameters:
+//   - userId: The user's ID.
+//   - gameId: The game ID to retrieve achievement data for.
+//
+// Returns:
+//   - A pointer to model.UserGameAchievementCompletion with detailed user and game achievement data.
+//   - An error if either the user or game is not found (pkg.ErrUserNotFound).
+//
+// Example:
+//
+//	completion, err := stubStore.GetUserGameAchievementCompletion(1, 101)
+//	if err != nil {
+//	    t.Logf("Achievement data not found: %v", err)
+//	}
 func (s *StubUserStore) GetUserGameAchievementCompletion(userId, gameId int) (*model.UserGameAchievementCompletion, error) {
 	for _, testUser := range s.users {
 		if testUser.ID == userId {

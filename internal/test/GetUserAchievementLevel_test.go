@@ -424,6 +424,18 @@ func TestCustomUser(t *testing.T) {
 	}
 }
 
+// newGetUserAchievementLevelRequest creates a new HTTP GET request for retrieving a user's achievement level.
+//
+// Parameters:
+//   - t: The testing interface (typically *testing.T).
+//   - userId: The user ID to include in the request path.
+//
+// Returns:
+//   - A pointer to an http.Request targeting the achievement-level endpoint.
+//
+// Example:
+//
+//	req := newGetUserAchievementLevelRequest(t, "123")
 func newGetUserAchievementLevelRequest(t testing.TB, userId string) *http.Request {
 	t.Helper()
 	request, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/users/%s/achievement-level", userId), nil)
@@ -431,6 +443,14 @@ func newGetUserAchievementLevelRequest(t testing.TB, userId string) *http.Reques
 	return request
 }
 
+// assertAchievementLevelResponse compares the actual and expected user's achievement level responses.
+//
+// Parameters:
+//   - t: The testing interface.
+//   - got: The actual response received.
+//   - want: The expected response.
+//
+// This function fails the test if `got` and `want` objects are not equal.
 func assertAchievementLevelResponse(t testing.TB, got, want any) {
 	t.Helper()
 
@@ -439,6 +459,21 @@ func assertAchievementLevelResponse(t testing.TB, got, want any) {
 	}
 }
 
+// getExpectedAndReceivedUserAchievementErrorResponse decodes the actual error response from the HTTP response
+// and constructs the expected one using a given error then compares them.
+//
+// Parameters:
+//   - t: The testing interface.
+//   - response: The HTTP response recorder containing the actual response.
+//   - wantedError: The expected error used to create the expected error response.
+//
+// Returns:
+//   - A pointer to the expected pkg.ErrorResponse.
+//   - A pointer to the actual pkg.ErrorResponse decoded from the response body.
+//
+// Example:
+//
+//	want, got := getExpectedAndReceivedUserAchievementErrorResponse(t, resp, pkg.ErrUserNotFound)
 func getExpectedAndReceivedUserAchievementErrorResponse(
 	t testing.TB,
 	response *httptest.ResponseRecorder,
@@ -459,6 +494,22 @@ func getExpectedAndReceivedUserAchievementErrorResponse(
 	return wantedErrorResponse, gotErrorResponse
 }
 
+// getExpectedAndReceivedUserAchievementValidResponse constructs the expected valid response for a user achievement level,
+// and decodes the actual response from the response recorder.
+//
+// Parameters:
+//   - t: The testing interface.
+//   - user: The user whose achievement level is being tested.
+//   - response: The HTTP response recorder containing the actual response.
+//   - achievementLevel: The expected achievement level string.
+//
+// Returns:
+//   - A pointer to the expected model.UserAchievementLevel.
+//   - A pointer to the actual model.UserAchievementLevel decoded from the response.
+//
+// Example:
+//
+//	want, got := getExpectedAndReceivedUserAchievementValidResponse(t, user, resp, "Gold")
 func getExpectedAndReceivedUserAchievementValidResponse(
 	t testing.TB,
 	user UserData,
@@ -483,6 +534,18 @@ func getExpectedAndReceivedUserAchievementValidResponse(
 	return wantedResponse, gotResponse
 }
 
+// assertHttpResponseStatus compares the received HTTP status code with the expected value.
+//
+// Parameters:
+//   - t: The testing interface.
+//   - got: The actual HTTP status code returned.
+//   - want: The expected HTTP status code.
+//
+// This function fails the test if the status codes do not match.
+//
+// Example:
+//
+//	assertHttpResponseStatus(t, recorder.Code, http.StatusOK)
 func assertHttpResponseStatus(t testing.TB, got, want int) {
 	t.Helper()
 	if got != want {
