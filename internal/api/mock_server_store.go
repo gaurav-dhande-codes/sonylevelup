@@ -37,7 +37,7 @@ func (m *MockServerUserStore) GetUser(userId int) (*model.User, error) {
 	case http.StatusOK:
 		// continue as usual
 	default:
-		return nil, fmt.Errorf("error response received while making get user request to mock server, %v", err)
+		return nil, fmt.Errorf("error response received while making get user request to mock server, %v", response.StatusCode)
 	}
 
 	user := &model.User{}
@@ -66,7 +66,7 @@ func (m *MockServerUserStore) GetUserGameLibrary(userId int) (*model.UserLibrary
 	case http.StatusOK:
 		// continue as usual
 	default:
-		return nil, fmt.Errorf("error response received while making get user library request to mock server, %v", err)
+		return nil, fmt.Errorf("error response received while making get user library request to mock server, %v", response.StatusCode)
 	}
 
 	userLibrary := &model.UserLibrary{}
@@ -95,7 +95,7 @@ func (m *MockServerUserStore) GetUserGameAchievementCompletion(userId, gameId in
 	case http.StatusOK:
 		// continue as usual
 	default:
-		return nil, fmt.Errorf("error response received while making get user game achievement completion request to mock server, %v", err)
+		return nil, fmt.Errorf("error response received while making get user game achievement completion request to mock server, %v", response.StatusCode)
 	}
 
 	userGameAchievementCompletion := &model.UserGameAchievementCompletion{}
