@@ -41,7 +41,6 @@ func (m *MockServerUserStore) GetUser(userId int) (*model.User, error) {
 		return nil, fmt.Errorf("error encountered while decoding get user response received from mock server, %v", err)
 	}
 
-	fmt.Println(user)
 	return user, nil
 }
 
@@ -69,7 +68,6 @@ func (m *MockServerUserStore) GetUserGameLibrary(userId int) (*model.UserLibrary
 		return nil, fmt.Errorf("error encountered while decoding get user library response received from mock server, %v", err)
 	}
 
-	fmt.Println(userLibrary)
 	return userLibrary, nil
 }
 
@@ -97,6 +95,5 @@ func (m *MockServerUserStore) GetUserGameAchievementCompletion(userId, gameId in
 		return nil, fmt.Errorf("error encountered while decoding get user game achievement completion response received from mock server, %v", err)
 	}
 
-	fmt.Println(userGameAchievementCompletion)
 	return userGameAchievementCompletion, nil
 }

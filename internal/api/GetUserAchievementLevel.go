@@ -1,7 +1,6 @@
 package api
 
 import (
-	"log"
 	"net/http"
 	"strconv"
 
@@ -15,6 +14,7 @@ func (s *SonyServer) GetUserAchievementLevel(w http.ResponseWriter, r *http.Requ
 	userId := vars["userId"]
 	intUserId, err := strconv.Atoi(userId)
 	if err != nil {
+		pkg.ErrorLogger.Printf("Failed to parse User ID %q: %v", userId, err)
 		pkg.WriteErrorResponseToResponseWriter(w, http.StatusBadRequest, pkg.ErrInvalidUserID)
 
 		return
@@ -23,10 +23,11 @@ func (s *SonyServer) GetUserAchievementLevel(w http.ResponseWriter, r *http.Requ
 	user, err := s.store.GetUser(intUserId)
 	if err != nil {
 		if err == pkg.ErrUserNotFound {
+			pkg.ErrorLogger.Printf("User ID %d does not exist in store: %v", intUserId, err)
 			pkg.WriteErrorResponseToResponseWriter(w, http.StatusNotFound, err)
 		} else {
+			pkg.ErrorLogger.Printf("Failed unexpectedly when fetching user with User ID %d from store: %v", intUserId, err)
 			pkg.WriteErrorResponseToResponseWriter(w, http.StatusInternalServerError, pkg.ErrInternalServerError)
-			log.Println(err)
 		}
 
 		return
@@ -39,10 +40,11 @@ func (s *SonyServer) GetUserAchievementLevel(w http.ResponseWriter, r *http.Requ
 	userGameLibrary, err := s.store.GetUserGameLibrary(intUserId)
 	if err != nil {
 		if err == pkg.ErrUserNotFound {
+			pkg.ErrorLogger.Printf("User ID %d does not exist in store: %v", intUserId, err)
 			pkg.WriteErrorResponseToResponseWriter(w, http.StatusNotFound, err)
 		} else {
+			pkg.ErrorLogger.Printf("Failed unexpectedly when fetching user game library with User ID %d from store: %v", intUserId, err)
 			pkg.WriteErrorResponseToResponseWriter(w, http.StatusInternalServerError, pkg.ErrInternalServerError)
-			log.Println(err)
 		}
 
 		return
@@ -70,10 +72,11 @@ func (s *SonyServer) GetUserAchievementLevel(w http.ResponseWriter, r *http.Requ
 		gameAchievementCompletion, err := s.store.GetUserGameAchievementCompletion(intUserId, game.Id)
 		if err != nil {
 			if err == pkg.ErrUserOrGameNotFound {
+				pkg.ErrorLogger.Printf("Either User ID %d or Game ID %d does not exist in store: %v", intUserId, game.Id, err)
 				pkg.WriteErrorResponseToResponseWriter(w, http.StatusNotFound, err)
 			} else {
+				pkg.ErrorLogger.Printf("Failed unexpectedly when fetching user game achievement completion with User ID %d and Game ID %d from store: %v", intUserId, game.Id, err)
 				pkg.WriteErrorResponseToResponseWriter(w, http.StatusInternalServerError, pkg.ErrInternalServerError)
-				log.Println(err)
 			}
 
 			return
