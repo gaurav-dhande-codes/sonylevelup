@@ -74,5 +74,29 @@ func (m *MockServerUserStore) GetUserGameLibrary(userId int) (*model.UserLibrary
 }
 
 func (m *MockServerUserStore) GetUserGameAchievementCompletion(userId, gameId int) (*model.UserGameAchievementCompletion, error) {
-	return &model.UserGameAchievementCompletion{}, nil
+	GetUserGameAchievementCompletionUrl := fmt.Sprintf("%s/users/%d/achievements/%d", m.baseUrl, userId, gameId)
+
+	response, err := http.Get(GetUserGameAchievementCompletionUrl)
+	if err != nil {
+		return nil, fmt.Errorf("error while making get user game achievement completion request to mock server, %v", err)
+	}
+	defer response.Body.Close()
+
+	switch response.StatusCode {
+	case http.StatusNotFound:
+		return nil, pkg.ErrUserOrGameNotFound
+	case http.StatusOK:
+		// continue as usual
+	default:
+		return nil, fmt.Errorf("error response received while making get user game achievement completion request to mock server, %v", err)
+	}
+
+	userGameAchievementCompletion := &model.UserGameAchievementCompletion{}
+	err = json.NewDecoder(response.Body).Decode(userGameAchievementCompletion)
+	if err != nil {
+		return nil, fmt.Errorf("error encountered while decoding get user game achievement completion response received from mock server, %v", err)
+	}
+
+	fmt.Println(userGameAchievementCompletion)
+	return userGameAchievementCompletion, nil
 }
