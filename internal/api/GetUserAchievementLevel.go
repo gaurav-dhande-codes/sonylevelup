@@ -21,10 +21,15 @@ func (s *SonyServer) GetUserAchievementLevel(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	user, _ := s.store.GetUser(intUserId)
-	if user == nil {
-		w.WriteHeader(http.StatusNotFound)
-		fmt.Fprintf(w, "Not Found")
+	_, err = s.store.GetUser(intUserId)
+	if err != nil {
+		if err == pkg.ErrUserNotFound {
+			w.WriteHeader(http.StatusNotFound)
+			fmt.Fprintf(w, "Not Found")
+		} else {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprintf(w, "%s", err.Error())
+		}
 
 		return
 	}
