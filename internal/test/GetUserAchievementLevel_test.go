@@ -1,12 +1,15 @@
 package test
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"testing"
 
 	"github.com/sonylevelup/internal/api"
+	"github.com/sonylevelup/internal/model"
 	"github.com/sonylevelup/internal/pkg"
 )
 
@@ -53,16 +56,15 @@ func TestGetUserAchievementLevelForNoAchievementLevelUsers(t *testing.T) {
 	testStore := StubUserStore{testUsers}
 	testServer := api.NewSonyServer(&testStore)
 
-	for _, test := range testUsers {
-		t.Run(fmt.Sprintf("Test User %s", test.Name), func(t *testing.T) {
+	for _, user := range testUsers {
+		t.Run(fmt.Sprintf("Test User %s", user.Name), func(t *testing.T) {
 			response := httptest.NewRecorder()
-			testServer.ServeHTTP(response, newGetUserAchievementLevelRequest(t, fmt.Sprint(test.ID)))
+			testServer.ServeHTTP(response, newGetUserAchievementLevelRequest(t, fmt.Sprint(user.ID)))
 
-			got := response.Body.String()
-			want := pkg.NoAchievementLevel
+			wantedResponse, gotResponse := getExpectedAndReceivedUserAchievementValidResponse(t, user, response, pkg.NoAchievementLevel)
 
 			assertHttpResponseStatus(t, response.Code, http.StatusOK)
-			assertResponseBody(t, got, want)
+			assertAchievementLevelResponse(t, gotResponse, wantedResponse)
 		})
 	}
 }
@@ -136,16 +138,15 @@ func TestGetUserAchievementLevelForBronzeAchievementLevelUsers(t *testing.T) {
 	testStore := StubUserStore{testUsers}
 	testServer := api.NewSonyServer(&testStore)
 
-	for _, test := range testUsers {
-		t.Run(fmt.Sprintf("Test User %s", test.Name), func(t *testing.T) {
+	for _, user := range testUsers {
+		t.Run(fmt.Sprintf("Test User %s", user.Name), func(t *testing.T) {
 			response := httptest.NewRecorder()
-			testServer.ServeHTTP(response, newGetUserAchievementLevelRequest(t, fmt.Sprint(test.ID)))
+			testServer.ServeHTTP(response, newGetUserAchievementLevelRequest(t, fmt.Sprint(user.ID)))
 
-			got := response.Body.String()
-			want := pkg.BronzeAchievementLevel
+			wantedResponse, gotResponse := getExpectedAndReceivedUserAchievementValidResponse(t, user, response, pkg.BronzeAchievementLevel)
 
 			assertHttpResponseStatus(t, response.Code, http.StatusOK)
-			assertResponseBody(t, got, want)
+			assertAchievementLevelResponse(t, gotResponse, wantedResponse)
 		})
 	}
 }
@@ -237,16 +238,15 @@ func TestGetUserAchievementLevelForSilverAchievementLevelUsers(t *testing.T) {
 	testStore := StubUserStore{testUsers}
 	testServer := api.NewSonyServer(&testStore)
 
-	for _, test := range testUsers {
-		t.Run(fmt.Sprintf("Test User %s", test.Name), func(t *testing.T) {
+	for _, user := range testUsers {
+		t.Run(fmt.Sprintf("Test User %s", user.Name), func(t *testing.T) {
 			response := httptest.NewRecorder()
-			testServer.ServeHTTP(response, newGetUserAchievementLevelRequest(t, fmt.Sprint(test.ID)))
+			testServer.ServeHTTP(response, newGetUserAchievementLevelRequest(t, fmt.Sprint(user.ID)))
 
-			got := response.Body.String()
-			want := pkg.SilverAchievementLevel
+			wantedResponse, gotResponse := getExpectedAndReceivedUserAchievementValidResponse(t, user, response, pkg.SilverAchievementLevel)
 
 			assertHttpResponseStatus(t, response.Code, http.StatusOK)
-			assertResponseBody(t, got, want)
+			assertAchievementLevelResponse(t, gotResponse, wantedResponse)
 		})
 	}
 }
@@ -309,16 +309,15 @@ func TestGetUserAchievementLevelForGoldAchievementLevelUsers(t *testing.T) {
 	testStore := StubUserStore{testUsers}
 	testServer := api.NewSonyServer(&testStore)
 
-	for _, test := range testUsers {
-		t.Run(fmt.Sprintf("Test User %s", test.Name), func(t *testing.T) {
+	for _, user := range testUsers {
+		t.Run(fmt.Sprintf("Test User %s", user.Name), func(t *testing.T) {
 			response := httptest.NewRecorder()
-			testServer.ServeHTTP(response, newGetUserAchievementLevelRequest(t, fmt.Sprint(test.ID)))
+			testServer.ServeHTTP(response, newGetUserAchievementLevelRequest(t, fmt.Sprint(user.ID)))
 
-			got := response.Body.String()
-			want := pkg.GoldAchievementLevel
+			wantedResponse, gotResponse := getExpectedAndReceivedUserAchievementValidResponse(t, user, response, pkg.GoldAchievementLevel)
 
 			assertHttpResponseStatus(t, response.Code, http.StatusOK)
-			assertResponseBody(t, got, want)
+			assertAchievementLevelResponse(t, gotResponse, wantedResponse)
 		})
 	}
 }
@@ -345,16 +344,15 @@ func TestGetUserAchievementLevelForPlatinumAchievementLevelUsers(t *testing.T) {
 	testStore := StubUserStore{testUsers}
 	testServer := api.NewSonyServer(&testStore)
 
-	for _, test := range testUsers {
-		t.Run(fmt.Sprintf("Test User %s", test.Name), func(t *testing.T) {
+	for _, user := range testUsers {
+		t.Run(fmt.Sprintf("Test User %s", user.Name), func(t *testing.T) {
 			response := httptest.NewRecorder()
-			testServer.ServeHTTP(response, newGetUserAchievementLevelRequest(t, fmt.Sprint(test.ID)))
+			testServer.ServeHTTP(response, newGetUserAchievementLevelRequest(t, fmt.Sprint(user.ID)))
 
-			got := response.Body.String()
-			want := pkg.PlatinumAchievementLevel
+			wantedResponse, gotResponse := getExpectedAndReceivedUserAchievementValidResponse(t, user, response, pkg.PlatinumAchievementLevel)
 
 			assertHttpResponseStatus(t, response.Code, http.StatusOK)
-			assertResponseBody(t, got, want)
+			assertAchievementLevelResponse(t, gotResponse, wantedResponse)
 		})
 	}
 }
@@ -375,22 +373,20 @@ func TestAmbiguousBehaviour(t *testing.T) {
 		response := httptest.NewRecorder()
 		testServer.ServeHTTP(response, newGetUserAchievementLevelRequest(t, "1a"))
 
-		got := response.Body.String()
-		want := "Bad Request"
+		wantedErrorResponse, gotErrorResponse := getExpectedAndReceivedUserAchievementErrorResponse(t, response, pkg.ErrInvalidUserID)
 
 		assertHttpResponseStatus(t, response.Code, http.StatusBadRequest)
-		assertResponseBody(t, got, want)
+		assertAchievementLevelResponse(t, gotErrorResponse, wantedErrorResponse)
 	})
 
 	t.Run("Check achievement level for non existing user", func(t *testing.T) {
 		response := httptest.NewRecorder()
 		testServer.ServeHTTP(response, newGetUserAchievementLevelRequest(t, "2"))
 
-		got := response.Body.String()
-		want := "Not Found"
+		wantedErrorResponse, gotErrorResponse := getExpectedAndReceivedUserAchievementErrorResponse(t, response, pkg.ErrUserNotFound)
 
 		assertHttpResponseStatus(t, response.Code, http.StatusNotFound)
-		assertResponseBody(t, got, want)
+		assertAchievementLevelResponse(t, gotErrorResponse, wantedErrorResponse)
 	})
 }
 
@@ -415,16 +411,15 @@ func TestCustomUser(t *testing.T) {
 	testStore := StubUserStore{testUsers}
 	testServer := api.NewSonyServer(&testStore)
 
-	for _, test := range testUsers {
-		t.Run(fmt.Sprintf("Test User %s", test.Name), func(t *testing.T) {
+	for _, user := range testUsers {
+		t.Run(fmt.Sprintf("Test User %s", user.Name), func(t *testing.T) {
 			response := httptest.NewRecorder()
-			testServer.ServeHTTP(response, newGetUserAchievementLevelRequest(t, fmt.Sprint(test.ID)))
+			testServer.ServeHTTP(response, newGetUserAchievementLevelRequest(t, fmt.Sprint(user.ID)))
 
-			got := response.Body.String()
-			want := pkg.NoAchievementLevel
+			wantedResponse, gotResponse := getExpectedAndReceivedUserAchievementValidResponse(t, user, response, pkg.NoAchievementLevel)
 
 			assertHttpResponseStatus(t, response.Code, http.StatusOK)
-			assertResponseBody(t, got, want)
+			assertAchievementLevelResponse(t, gotResponse, wantedResponse)
 		})
 	}
 }
@@ -436,11 +431,56 @@ func newGetUserAchievementLevelRequest(t testing.TB, userId string) *http.Reques
 	return request
 }
 
-func assertResponseBody(t testing.TB, got, want string) {
+func assertAchievementLevelResponse(t testing.TB, got, want any) {
 	t.Helper()
-	if got != want {
-		t.Errorf("got: %q, want: %q", got, want)
+
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got achievement level response body: %v, want: %v", got, want)
 	}
+}
+
+func getExpectedAndReceivedUserAchievementErrorResponse(
+	t testing.TB,
+	response *httptest.ResponseRecorder,
+	wantedError error) (*pkg.ErrorResponse, *pkg.ErrorResponse) {
+	t.Helper()
+
+	gotErrorResponse := &pkg.ErrorResponse{}
+	err := json.NewDecoder(response.Body).Decode(gotErrorResponse)
+	if err != nil {
+		t.Fatalf("error while decoding response: %v", err)
+	}
+
+	wantedErrorResponse := &pkg.ErrorResponse{
+		Error:   pkg.ErrorMapping[wantedError],
+		Message: wantedError.Error(),
+	}
+
+	return wantedErrorResponse, gotErrorResponse
+}
+
+func getExpectedAndReceivedUserAchievementValidResponse(
+	t testing.TB,
+	user UserData,
+	response *httptest.ResponseRecorder,
+	achievementLevel string) (*model.UserAchievementLevel, *model.UserAchievementLevel) {
+	t.Helper()
+
+	wantedResponse := &model.UserAchievementLevel{
+		User: &model.User{
+			Id:    user.ID,
+			Name:  user.Name,
+			Email: user.Email},
+		AchievementLevel: achievementLevel,
+	}
+
+	gotResponse := &model.UserAchievementLevel{}
+	err := json.NewDecoder(response.Body).Decode(gotResponse)
+	if err != nil {
+		t.Fatalf("error while decoding response: %v", err)
+	}
+
+	return wantedResponse, gotResponse
 }
 
 func assertHttpResponseStatus(t testing.TB, got, want int) {
