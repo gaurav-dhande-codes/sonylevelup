@@ -13,7 +13,13 @@ import (
 func (s *SonyServer) GetUserAchievementLevel(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	userId := vars["userId"]
-	intUserId, _ := strconv.Atoi(userId)
+	intUserId, err := strconv.Atoi(userId)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, "Bad Request")
+
+		return
+	}
 
 	userGameLibrary := s.store.GetUserGameLibrary(intUserId)
 
