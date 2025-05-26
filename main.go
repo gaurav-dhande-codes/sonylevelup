@@ -10,6 +10,9 @@ import (
 
 func main() {
 	fmt.Println("Welcome to Sony Level Up!")
-	server := &api.SonyServer{}
+
+	mockServerUserStore := api.NewMockServerUserStore("http://localhost:8080")
+	server := api.NewSonyServer(mockServerUserStore)
+
 	log.Fatal(http.ListenAndServe(":5000", server))
 }
