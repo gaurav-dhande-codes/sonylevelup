@@ -34,7 +34,18 @@ func (s *SonyServer) GetUserAchievementLevel(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	userGameLibrary, _ := s.store.GetUserGameLibrary(intUserId)
+	userGameLibrary, err := s.store.GetUserGameLibrary(intUserId)
+	if err != nil {
+		if err == pkg.ErrUserNotFound {
+			w.WriteHeader(http.StatusNotFound)
+			fmt.Fprintf(w, "Not Found")
+		} else {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprintf(w, "%s", err.Error())
+		}
+
+		return
+	}
 
 	// Check if the user owns 10 or fewer games
 	if len(userGameLibrary.OwnedGames) <= 10 {
