@@ -9,14 +9,23 @@ import (
 	"github.com/sonylevelup/internal/pkg"
 )
 
+// MockServerUserStore is a mock implementation of a user data store that
+// fetches user-related data from a remote mock server via HTTP requests. It
+// uses a base URL to construct API endpoints for retrieving user info, game
+// library, and achievement completion data.
 type MockServerUserStore struct {
 	baseUrl string
 }
 
+// NewMockServerUserStore creates a new MockServerUserStore instance with the
+// specified base URL for the mock server API.
 func NewMockServerUserStore(baseUrl string) *MockServerUserStore {
 	return &MockServerUserStore{baseUrl: baseUrl}
 }
 
+// GetUser retrieves a User object by userId by making an HTTP GET request
+// to the mock server. It returns the user data on success or an error if the
+// user is not found or any other failure occurs.
 func (m *MockServerUserStore) GetUser(userId int) (*model.User, error) {
 	getUserUrl := fmt.Sprintf("%s/users/%d", m.baseUrl, userId)
 
@@ -44,6 +53,9 @@ func (m *MockServerUserStore) GetUser(userId int) (*model.User, error) {
 	return user, nil
 }
 
+// GetUserGameLibrary fetches the game library for a given userId from the mock
+// server via an HTTP GET request. It returns the user's game library on success
+// or an error if the user is not found or the request fails.
 func (m *MockServerUserStore) GetUserGameLibrary(userId int) (*model.UserLibrary, error) {
 	getUserGameLibraryUrl := fmt.Sprintf("%s/users/%d/library", m.baseUrl, userId)
 
@@ -71,6 +83,10 @@ func (m *MockServerUserStore) GetUserGameLibrary(userId int) (*model.UserLibrary
 	return userLibrary, nil
 }
 
+// GetUserGameAchievementCompletion retrieves the achievement completion details
+// for a specific user and game from the mock server. It performs an HTTP GET
+// request and returns the completion data or an error if the user or game is
+// not found or if the request fails.
 func (m *MockServerUserStore) GetUserGameAchievementCompletion(userId, gameId int) (*model.UserGameAchievementCompletion, error) {
 	GetUserGameAchievementCompletionUrl := fmt.Sprintf("%s/users/%d/achievements/%d", m.baseUrl, userId, gameId)
 
