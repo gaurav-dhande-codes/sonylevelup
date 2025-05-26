@@ -81,9 +81,9 @@ func (m *MockServerUserStore) GetUserGameLibrary(userId int) (*model.UserLibrary
 // GetUserGameAchievementCompletion retrieves the achievement completion details for a specific user and game from the mock server.
 // It performs an HTTP GET request and returns the completion data or an error if the user or game is not found or if the request fails.
 func (m *MockServerUserStore) GetUserGameAchievementCompletion(userId, gameId int) (*model.UserGameAchievementCompletion, error) {
-	GetUserGameAchievementCompletionUrl := fmt.Sprintf("%s/users/%d/achievements/%d", m.baseUrl, userId, gameId)
+	getUserGameAchievementCompletionUrl := fmt.Sprintf("%s/users/%d/achievements/%d", m.baseUrl, userId, gameId)
 
-	response, err := http.Get(GetUserGameAchievementCompletionUrl)
+	response, err := http.Get(getUserGameAchievementCompletionUrl)
 	if err != nil {
 		return nil, fmt.Errorf("error while making get user game achievement completion request to mock server, %v", err)
 	}
@@ -105,4 +105,28 @@ func (m *MockServerUserStore) GetUserGameAchievementCompletion(userId, gameId in
 	}
 
 	return userGameAchievementCompletion, nil
+}
+
+// GetAllUser retrieves all users from the mock server.
+// It performs an HTTP Get request and return a slice of users or an error if the request fails.
+func (m *MockServerUserStore) GetAllUsers() ([]*model.User, error) {
+	getAllUsersUrl := fmt.Sprintf("%s/users", m.baseUrl)
+
+	response, err := http.Get(getAllUsersUrl)
+	if err != nil {
+		return nil, fmt.Errorf("error while making get all users request to mock server, %v", err)
+	}
+	defer response.Body.Close()
+
+	if response.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("error response received while making get all users request to mock server, %v", err)
+	}
+
+	allUsers := []*model.User{}
+	err = json.NewDecoder(response.Body).Decode(allUsers)
+	if err != nil {
+		return nil, fmt.Errorf("error encountered while decoding get all users response received from mock server, %v", err)
+	}
+
+	return allUsers, nil
 }
