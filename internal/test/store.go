@@ -124,3 +124,32 @@ func (s *StubUserStore) GetUserGameAchievementCompletion(userId, gameId int) (*m
 
 	return nil, pkg.ErrUserNotFound
 }
+
+// GetAllUsers returns a list of all users in the stub store.
+//
+// Returns:
+//   - A slice of pointers to model.User containing all stub users.
+//   - An error if there is a problem retrieving the users (always nil in this stub).
+//
+// Example:
+//
+//	users, err := stubStore.GetAllUsers()
+//	if err != nil {
+//	    t.Fatalf("Failed to get users: %v", err)
+//	}
+//	for _, user := range users {
+//	    t.Logf("User: %v", user)
+//	}
+func (s *StubUserStore) GetAllUsers() ([]*model.User, error) {
+	allUsers := []*model.User{}
+	for _, testUser := range s.users {
+
+		allUsers = append(allUsers, &model.User{
+			Id:    testUser.ID,
+			Name:  testUser.Name,
+			Email: testUser.Email,
+		})
+	}
+
+	return allUsers, nil
+}
