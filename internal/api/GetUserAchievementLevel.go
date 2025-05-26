@@ -1,7 +1,7 @@
 package api
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -15,33 +15,34 @@ func (s *SonyServer) GetUserAchievementLevel(w http.ResponseWriter, r *http.Requ
 	userId := vars["userId"]
 	intUserId, err := strconv.Atoi(userId)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintf(w, "Bad Request")
+		pkg.WriteErrorResponseToResponseWriter(w, http.StatusBadRequest, pkg.ErrInvalidUserID)
 
 		return
 	}
 
-	_, err = s.store.GetUser(intUserId)
+	user, err := s.store.GetUser(intUserId)
 	if err != nil {
 		if err == pkg.ErrUserNotFound {
-			w.WriteHeader(http.StatusNotFound)
-			fmt.Fprintf(w, "Not Found")
+			pkg.WriteErrorResponseToResponseWriter(w, http.StatusNotFound, err)
 		} else {
-			w.WriteHeader(http.StatusInternalServerError)
-			fmt.Fprintf(w, "%s", err.Error())
+			pkg.WriteErrorResponseToResponseWriter(w, http.StatusInternalServerError, pkg.ErrInternalServerError)
+			log.Println(err)
 		}
 
 		return
 	}
 
+	userAchievementLevel := model.UserAchievementLevel{
+		User: user,
+	}
+
 	userGameLibrary, err := s.store.GetUserGameLibrary(intUserId)
 	if err != nil {
 		if err == pkg.ErrUserNotFound {
-			w.WriteHeader(http.StatusNotFound)
-			fmt.Fprintf(w, "Not Found")
+			pkg.WriteErrorResponseToResponseWriter(w, http.StatusNotFound, err)
 		} else {
-			w.WriteHeader(http.StatusInternalServerError)
-			fmt.Fprintf(w, "%s", err.Error())
+			pkg.WriteErrorResponseToResponseWriter(w, http.StatusInternalServerError, pkg.ErrInternalServerError)
+			log.Println(err)
 		}
 
 		return
@@ -49,8 +50,9 @@ func (s *SonyServer) GetUserAchievementLevel(w http.ResponseWriter, r *http.Requ
 
 	// Check if the user owns 10 or fewer games
 	if len(userGameLibrary.OwnedGames) <= 10 {
-		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, pkg.NoAchievementLevel)
+		userAchievementLevel.AchievementLevel = pkg.NoAchievementLevel
+		WriteValidResponseToResponseWriter(w, http.StatusOK, userAchievementLevel)
+
 		return
 	}
 
@@ -59,13 +61,23 @@ func (s *SonyServer) GetUserAchievementLevel(w http.ResponseWriter, r *http.Requ
 
 	for _, game := range userGameLibrary.OwnedGames {
 		if achievementLevels[currentIndex].Name == pkg.BronzeAchievementLevel {
-			w.WriteHeader(http.StatusOK)
-			fmt.Fprintf(w, pkg.BronzeAchievementLevel)
+			userAchievementLevel.AchievementLevel = pkg.BronzeAchievementLevel
+			WriteValidResponseToResponseWriter(w, http.StatusOK, userAchievementLevel)
 
 			return
 		}
 
-		gameAchievementCompletion, _ := s.store.GetUserGameAchievementCompletion(intUserId, game.Id)
+		gameAchievementCompletion, err := s.store.GetUserGameAchievementCompletion(intUserId, game.Id)
+		if err != nil {
+			if err == pkg.ErrUserOrGameNotFound {
+				pkg.WriteErrorResponseToResponseWriter(w, http.StatusNotFound, err)
+			} else {
+				pkg.WriteErrorResponseToResponseWriter(w, http.StatusInternalServerError, pkg.ErrInternalServerError)
+				log.Println(err)
+			}
+
+			return
+		}
 
 		// Calculate the completion percentage for the game
 		gameAchievementCompletionPercentage := GetGameAchievementCompletionPercentage(
@@ -82,6 +94,6 @@ func (s *SonyServer) GetUserAchievementLevel(w http.ResponseWriter, r *http.Requ
 		}
 	}
 
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "%s", achievementLevels[currentIndex].Name)
+	userAchievementLevel.AchievementLevel = achievementLevels[currentIndex].Name
+	WriteValidResponseToResponseWriter(w, http.StatusOK, userAchievementLevel)
 }
