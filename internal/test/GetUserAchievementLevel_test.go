@@ -371,7 +371,7 @@ func TestAmbiguousBehaviour(t *testing.T) {
 	testStore := StubUserStore{testUsers}
 	testServer := api.NewSonyServer(&testStore)
 
-	t.Run("Check for bad request when parsing url parameters", func(t *testing.T) {
+	t.Run("Check achievement level for incompatible user Id", func(t *testing.T) {
 		response := httptest.NewRecorder()
 		testServer.ServeHTTP(response, newGetUserAchievementLevelRequest(t, "1a"))
 
@@ -379,6 +379,17 @@ func TestAmbiguousBehaviour(t *testing.T) {
 		want := "Bad Request"
 
 		assertHttpResponseStatus(t, response.Code, http.StatusBadRequest)
+		assertResponseBody(t, got, want)
+	})
+
+	t.Run("Check achievement level for non existing user", func(t *testing.T) {
+		response := httptest.NewRecorder()
+		testServer.ServeHTTP(response, newGetUserAchievementLevelRequest(t, "2"))
+
+		got := response.Body.String()
+		want := "Not Found"
+
+		assertHttpResponseStatus(t, response.Code, http.StatusNotFound)
 		assertResponseBody(t, got, want)
 	})
 }
