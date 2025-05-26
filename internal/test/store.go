@@ -2,13 +2,14 @@ package test
 
 import (
 	"github.com/sonylevelup/internal/model"
+	"github.com/sonylevelup/internal/pkg"
 )
 
 type StubUserStore struct {
 	users []UserData
 }
 
-func (s *StubUserStore) GetUser(userId int) *model.User {
+func (s *StubUserStore) GetUser(userId int) (*model.User, error) {
 	for _, testUser := range s.users {
 		if testUser.ID == userId {
 
@@ -16,14 +17,14 @@ func (s *StubUserStore) GetUser(userId int) *model.User {
 				Id:    testUser.ID,
 				Name:  testUser.Name,
 				Email: testUser.Email,
-			}
+			}, nil
 		}
 	}
 
-	return nil
+	return nil, pkg.ErrUserNotFound
 }
 
-func (s *StubUserStore) GetUserGameLibrary(userId int) *model.UserLibrary {
+func (s *StubUserStore) GetUserGameLibrary(userId int) (*model.UserLibrary, error) {
 	for _, testUser := range s.users {
 		if testUser.ID == userId {
 			testOwnedGames := []model.Game{}
@@ -43,14 +44,14 @@ func (s *StubUserStore) GetUserGameLibrary(userId int) *model.UserLibrary {
 					Id:    testUser.ID,
 					Name:  testUser.Name,
 					Email: testUser.Email,
-				}, OwnedGames: testOwnedGames}
+				}, OwnedGames: testOwnedGames}, nil
 		}
 	}
 
-	return nil
+	return nil, pkg.ErrUserNotFound
 }
 
-func (s *StubUserStore) GetUserGameAchievementCompletion(userId, gameId int) *model.UserGameAchievementCompletion {
+func (s *StubUserStore) GetUserGameAchievementCompletion(userId, gameId int) (*model.UserGameAchievementCompletion, error) {
 	for _, testUser := range s.users {
 		if testUser.ID == userId {
 
@@ -69,11 +70,11 @@ func (s *StubUserStore) GetUserGameAchievementCompletion(userId, gameId int) *mo
 							TotalAvailableAchievements: game.AvailableAchievements,
 						},
 						TotalCompletedAchievements: game.CompletedAchievements,
-					}
+					}, nil
 				}
 			}
 		}
 	}
 
-	return nil
+	return nil, pkg.ErrUserNotFound
 }
