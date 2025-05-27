@@ -1,15 +1,12 @@
 package test
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"reflect"
 	"testing"
 
 	"github.com/sonylevelup/internal/api"
-	"github.com/sonylevelup/internal/model"
 	"github.com/sonylevelup/internal/pkg"
 )
 
@@ -65,7 +62,7 @@ func TestGetUserAchievementLevelForNoAchievementLevelUsers(t *testing.T) {
 
 			assertHttpResponseStatus(t, response.Code, http.StatusOK)
 			assertContentType(t, response, pkg.JsonContentType)
-			assertAchievementLevelResponse(t, gotResponse, wantedResponse)
+			assertResponseBody(t, gotResponse, wantedResponse)
 		})
 	}
 }
@@ -148,7 +145,7 @@ func TestGetUserAchievementLevelForBronzeAchievementLevelUsers(t *testing.T) {
 
 			assertHttpResponseStatus(t, response.Code, http.StatusOK)
 			assertContentType(t, response, pkg.JsonContentType)
-			assertAchievementLevelResponse(t, gotResponse, wantedResponse)
+			assertResponseBody(t, gotResponse, wantedResponse)
 		})
 	}
 }
@@ -249,7 +246,7 @@ func TestGetUserAchievementLevelForSilverAchievementLevelUsers(t *testing.T) {
 
 			assertHttpResponseStatus(t, response.Code, http.StatusOK)
 			assertContentType(t, response, pkg.JsonContentType)
-			assertAchievementLevelResponse(t, gotResponse, wantedResponse)
+			assertResponseBody(t, gotResponse, wantedResponse)
 		})
 	}
 }
@@ -321,7 +318,7 @@ func TestGetUserAchievementLevelForGoldAchievementLevelUsers(t *testing.T) {
 
 			assertHttpResponseStatus(t, response.Code, http.StatusOK)
 			assertContentType(t, response, pkg.JsonContentType)
-			assertAchievementLevelResponse(t, gotResponse, wantedResponse)
+			assertResponseBody(t, gotResponse, wantedResponse)
 		})
 	}
 }
@@ -357,7 +354,7 @@ func TestGetUserAchievementLevelForPlatinumAchievementLevelUsers(t *testing.T) {
 
 			assertHttpResponseStatus(t, response.Code, http.StatusOK)
 			assertContentType(t, response, pkg.JsonContentType)
-			assertAchievementLevelResponse(t, gotResponse, wantedResponse)
+			assertResponseBody(t, gotResponse, wantedResponse)
 		})
 	}
 }
@@ -382,7 +379,7 @@ func TestAmbiguousBehaviour(t *testing.T) {
 
 		assertHttpResponseStatus(t, response.Code, http.StatusBadRequest)
 		assertContentType(t, response, pkg.JsonContentType)
-		assertAchievementLevelResponse(t, gotErrorResponse, wantedErrorResponse)
+		assertResponseBody(t, gotErrorResponse, wantedErrorResponse)
 	})
 
 	t.Run("Check achievement level for non existing user", func(t *testing.T) {
@@ -393,7 +390,7 @@ func TestAmbiguousBehaviour(t *testing.T) {
 
 		assertHttpResponseStatus(t, response.Code, http.StatusNotFound)
 		assertContentType(t, response, pkg.JsonContentType)
-		assertAchievementLevelResponse(t, gotErrorResponse, wantedErrorResponse)
+		assertResponseBody(t, gotErrorResponse, wantedErrorResponse)
 	})
 }
 
@@ -427,155 +424,7 @@ func TestCustomUser(t *testing.T) {
 
 			assertHttpResponseStatus(t, response.Code, http.StatusOK)
 			assertContentType(t, response, pkg.JsonContentType)
-			assertAchievementLevelResponse(t, gotResponse, wantedResponse)
+			assertResponseBody(t, gotResponse, wantedResponse)
 		})
-	}
-}
-
-// newGetUserAchievementLevelRequest creates a new HTTP GET request for retrieving a user's achievement level.
-//
-// Parameters:
-//   - t: The testing interface (typically *testing.T).
-//   - userId: The user ID to include in the request path.
-//
-// Returns:
-//   - A pointer to an http.Request targeting the achievement-level endpoint.
-//
-// Example:
-//
-//	req := newGetUserAchievementLevelRequest(t, "123")
-func newGetUserAchievementLevelRequest(t testing.TB, userId string) *http.Request {
-	t.Helper()
-	request, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/users/%s/achievement-level", userId), nil)
-
-	return request
-}
-
-// assertAchievementLevelResponse compares the actual and expected user's achievement level responses.
-//
-// Parameters:
-//   - t: The testing interface.
-//   - got: The actual response received.
-//   - want: The expected response.
-//
-// This function fails the test if `got` and `want` objects are not equal.
-func assertAchievementLevelResponse(t testing.TB, got, want any) {
-	t.Helper()
-
-	if !reflect.DeepEqual(got, want) {
-		t.Errorf("got achievement level response body: %v, want: %v", got, want)
-	}
-}
-
-// getExpectedAndReceivedUserAchievementErrorResponse decodes the actual error response from the HTTP response
-// and constructs the expected one using a given error then compares them.
-//
-// Parameters:
-//   - t: The testing interface.
-//   - response: The HTTP response recorder containing the actual response.
-//   - wantedError: The expected error used to create the expected error response.
-//
-// Returns:
-//   - A pointer to the expected pkg.ErrorResponse.
-//   - A pointer to the actual pkg.ErrorResponse decoded from the response body.
-//
-// Example:
-//
-//	want, got := getExpectedAndReceivedUserAchievementErrorResponse(t, resp, pkg.ErrUserNotFound)
-func getExpectedAndReceivedUserAchievementErrorResponse(
-	t testing.TB,
-	response *httptest.ResponseRecorder,
-	wantedError error) (*pkg.ErrorResponse, *pkg.ErrorResponse) {
-	t.Helper()
-
-	gotErrorResponse := &pkg.ErrorResponse{}
-	err := json.NewDecoder(response.Body).Decode(gotErrorResponse)
-	if err != nil {
-		t.Fatalf("error while decoding response: %v", err)
-	}
-
-	wantedErrorResponse := &pkg.ErrorResponse{
-		Error:   pkg.ErrorMapping[wantedError],
-		Message: wantedError.Error(),
-	}
-
-	return wantedErrorResponse, gotErrorResponse
-}
-
-// getExpectedAndReceivedUserAchievementValidResponse constructs the expected valid response for a user achievement level,
-// and decodes the actual response from the response recorder.
-//
-// Parameters:
-//   - t: The testing interface.
-//   - user: The user whose achievement level is being tested.
-//   - response: The HTTP response recorder containing the actual response.
-//   - achievementLevel: The expected achievement level string.
-//
-// Returns:
-//   - A pointer to the expected model.UserAchievementLevel.
-//   - A pointer to the actual model.UserAchievementLevel decoded from the response.
-//
-// Example:
-//
-//	want, got := getExpectedAndReceivedUserAchievementValidResponse(t, user, resp, "Gold")
-func getExpectedAndReceivedUserAchievementValidResponse(
-	t testing.TB,
-	user UserData,
-	response *httptest.ResponseRecorder,
-	achievementLevel string) (*model.UserAchievementLevel, *model.UserAchievementLevel) {
-	t.Helper()
-
-	wantedResponse := &model.UserAchievementLevel{
-		User: &model.User{
-			Id:    user.ID,
-			Name:  user.Name,
-			Email: user.Email},
-		AchievementLevel: achievementLevel,
-	}
-
-	gotResponse := &model.UserAchievementLevel{}
-	err := json.NewDecoder(response.Body).Decode(gotResponse)
-	if err != nil {
-		t.Fatalf("error while decoding response: %v", err)
-	}
-
-	return wantedResponse, gotResponse
-}
-
-// assertHttpResponseStatus compares the received HTTP status code with the expected value.
-//
-// Parameters:
-//   - t: The testing interface.
-//   - got: The actual HTTP status code returned.
-//   - want: The expected HTTP status code.
-//
-// This function fails the test if the status codes do not match.
-//
-// Example:
-//
-//	assertHttpResponseStatus(t, recorder.Code, http.StatusOK)
-func assertHttpResponseStatus(t testing.TB, got, want int) {
-	t.Helper()
-	if got != want {
-		t.Errorf("recieved incorrect status code, got: %d, want: %d", got, want)
-	}
-}
-
-// assertContentType checks whether the Content-Type header in the HTTP response matches the expected value.
-//
-// Parameters:
-//   - t: The testing interface (e.g., *testing.T or *testing.B).
-//   - response: The HTTP response recorder used to capture the test response.
-//   - want: The expected Content-Type header value (e.g., "application/json").
-//
-// This function fails the test if the Content-Type header does not match the expected value.
-//
-// Example:
-//
-//	assertContentType(t, recorder, "application/json")
-func assertContentType(t testing.TB, response *httptest.ResponseRecorder, want string) {
-	t.Helper()
-	if response.Result().Header.Get("content-type") != want {
-		t.Errorf("response header did not have content-type of %s, got: %v", want, response.Result().Header)
 	}
 }
