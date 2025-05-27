@@ -1,28 +1,31 @@
-import { useEffect, useState } from "react";
-import { UserList } from "./components/UserList";
-import type { User } from "./types/user";
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import playstationLogo from "./assets/playstation.png";
+import UserList from "./components/UserList";
 
-const App = () => {
-  const [users, setUsers] = useState<User[]>([]);
-
-  useEffect(() => {
-    const mockUsers: User[] = [
-      { id: 1, name: "Aiko Tanaka" },
-      { id: 2, name: "Liam Chen" },
-      { id: 3, name: "Sofia Hernandez" },
-      { id: 4, name: "Aiko Tanaka" },
-      { id: 5, name: "Liam Chen" },
-      { id: 6, name: "Sofia Hernandez" },
-    ];
-    setTimeout(() => setUsers(mockUsers), 500);
-  }, []);
-
+const App: React.FC = () => {
   return (
-    <div className="bg-dark text-light min-vh-100">
-      <div className="container d-flex justify-content-center pt-5">
-        <UserList users={users} />
+    <Router>
+      <div className="container py-4">
+        <div className="header d-flex align-items-center gap-3">
+          <img
+            src={playstationLogo}
+            alt="PlayStation Logo"
+            style={{ height: "100px", objectFit: "contain" }}
+          />
+          <div>
+            <h1>Sony Level Up Achievement Dashboard</h1>
+            <p className="subtitle">Track users' achievement level</p>
+          </div>
+        </div>
+
+        <div className="container mt-4">
+          <Routes>
+            <Route path="/" element={<UserList />} />
+          </Routes>
+        </div>
       </div>
-    </div>
+    </Router>
   );
 };
 
