@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/sonylevelup/internal/api"
+	"github.com/sonylevelup/internal/pkg"
 )
 
 func main() {
@@ -14,5 +14,5 @@ func main() {
 	mockServerUserStore := api.NewMockServerUserStore("http://localhost:8080")
 	server := api.NewSonyServer(mockServerUserStore)
 
-	log.Fatal(http.ListenAndServe(":5000", server))
+	pkg.ErrorLogger.Fatal(http.ListenAndServe(":5000", server))
 }
