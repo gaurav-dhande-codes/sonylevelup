@@ -6,4 +6,5 @@ const (
 	SilverAchievementLevel   = "Silver"
 	GoldAchievementLevel     = "Gold"
 	PlatinumAchievementLevel = "Platinum"
+	JsonContentType          = "application/json"
 )

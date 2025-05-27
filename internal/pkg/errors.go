@@ -52,7 +52,6 @@ var (
 //	pkg.WriteErrorResponseToResponseWriter(w, http.StatusNotFound, pkg.ErrUserNotFound)
 func WriteErrorResponseToResponseWriter(w http.ResponseWriter, statusCode int, err error) {
 	w.WriteHeader(statusCode)
-	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(GetErrorResponseBody(ErrorMapping[err], err.Error()))
 }
 

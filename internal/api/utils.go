@@ -37,6 +37,5 @@ func GetGameAchievementCompletionPercentage(completedAchievement, totalAchieveme
 //	WriteValidResponseToResponseWriter(w, http.StatusOK, map[string]string{"status": "success"})
 func WriteValidResponseToResponseWriter(w http.ResponseWriter, statusCode int, responseBody any) {
 	w.WriteHeader(statusCode)
-	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(responseBody)
 }

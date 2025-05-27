@@ -64,6 +64,7 @@ func TestGetUserAchievementLevelForNoAchievementLevelUsers(t *testing.T) {
 			wantedResponse, gotResponse := getExpectedAndReceivedUserAchievementValidResponse(t, user, response, pkg.NoAchievementLevel)
 
 			assertHttpResponseStatus(t, response.Code, http.StatusOK)
+			assertContentType(t, response, pkg.JsonContentType)
 			assertAchievementLevelResponse(t, gotResponse, wantedResponse)
 		})
 	}
@@ -146,6 +147,7 @@ func TestGetUserAchievementLevelForBronzeAchievementLevelUsers(t *testing.T) {
 			wantedResponse, gotResponse := getExpectedAndReceivedUserAchievementValidResponse(t, user, response, pkg.BronzeAchievementLevel)
 
 			assertHttpResponseStatus(t, response.Code, http.StatusOK)
+			assertContentType(t, response, pkg.JsonContentType)
 			assertAchievementLevelResponse(t, gotResponse, wantedResponse)
 		})
 	}
@@ -246,6 +248,7 @@ func TestGetUserAchievementLevelForSilverAchievementLevelUsers(t *testing.T) {
 			wantedResponse, gotResponse := getExpectedAndReceivedUserAchievementValidResponse(t, user, response, pkg.SilverAchievementLevel)
 
 			assertHttpResponseStatus(t, response.Code, http.StatusOK)
+			assertContentType(t, response, pkg.JsonContentType)
 			assertAchievementLevelResponse(t, gotResponse, wantedResponse)
 		})
 	}
@@ -317,6 +320,7 @@ func TestGetUserAchievementLevelForGoldAchievementLevelUsers(t *testing.T) {
 			wantedResponse, gotResponse := getExpectedAndReceivedUserAchievementValidResponse(t, user, response, pkg.GoldAchievementLevel)
 
 			assertHttpResponseStatus(t, response.Code, http.StatusOK)
+			assertContentType(t, response, pkg.JsonContentType)
 			assertAchievementLevelResponse(t, gotResponse, wantedResponse)
 		})
 	}
@@ -352,6 +356,7 @@ func TestGetUserAchievementLevelForPlatinumAchievementLevelUsers(t *testing.T) {
 			wantedResponse, gotResponse := getExpectedAndReceivedUserAchievementValidResponse(t, user, response, pkg.PlatinumAchievementLevel)
 
 			assertHttpResponseStatus(t, response.Code, http.StatusOK)
+			assertContentType(t, response, pkg.JsonContentType)
 			assertAchievementLevelResponse(t, gotResponse, wantedResponse)
 		})
 	}
@@ -376,6 +381,7 @@ func TestAmbiguousBehaviour(t *testing.T) {
 		wantedErrorResponse, gotErrorResponse := getExpectedAndReceivedUserAchievementErrorResponse(t, response, pkg.ErrInvalidUserID)
 
 		assertHttpResponseStatus(t, response.Code, http.StatusBadRequest)
+		assertContentType(t, response, pkg.JsonContentType)
 		assertAchievementLevelResponse(t, gotErrorResponse, wantedErrorResponse)
 	})
 
@@ -386,6 +392,7 @@ func TestAmbiguousBehaviour(t *testing.T) {
 		wantedErrorResponse, gotErrorResponse := getExpectedAndReceivedUserAchievementErrorResponse(t, response, pkg.ErrUserNotFound)
 
 		assertHttpResponseStatus(t, response.Code, http.StatusNotFound)
+		assertContentType(t, response, pkg.JsonContentType)
 		assertAchievementLevelResponse(t, gotErrorResponse, wantedErrorResponse)
 	})
 }
@@ -419,6 +426,7 @@ func TestCustomUser(t *testing.T) {
 			wantedResponse, gotResponse := getExpectedAndReceivedUserAchievementValidResponse(t, user, response, pkg.NoAchievementLevel)
 
 			assertHttpResponseStatus(t, response.Code, http.StatusOK)
+			assertContentType(t, response, pkg.JsonContentType)
 			assertAchievementLevelResponse(t, gotResponse, wantedResponse)
 		})
 	}
@@ -550,5 +558,24 @@ func assertHttpResponseStatus(t testing.TB, got, want int) {
 	t.Helper()
 	if got != want {
 		t.Errorf("recieved incorrect status code, got: %d, want: %d", got, want)
+	}
+}
+
+// assertContentType checks whether the Content-Type header in the HTTP response matches the expected value.
+//
+// Parameters:
+//   - t: The testing interface (e.g., *testing.T or *testing.B).
+//   - response: The HTTP response recorder used to capture the test response.
+//   - want: The expected Content-Type header value (e.g., "application/json").
+//
+// This function fails the test if the Content-Type header does not match the expected value.
+//
+// Example:
+//
+//	assertContentType(t, recorder, "application/json")
+func assertContentType(t testing.TB, response *httptest.ResponseRecorder, want string) {
+	t.Helper()
+	if response.Result().Header.Get("content-type") != want {
+		t.Errorf("response header did not have content-type of %s, got: %v", want, response.Result().Header)
 	}
 }
