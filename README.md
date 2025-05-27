@@ -43,6 +43,7 @@ _Frontend_:
 
 - Java 17+ (or your backend runtime environment)
 - Node.js and npm (for frontend)
+- Go
 
 ### Running the API Server (Sony Playstation API)
 
